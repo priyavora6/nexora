@@ -1,0 +1,315 @@
+import 'dart:math' as math;
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../config/app_colors.dart';
+import '../../config/app_constants.dart';
+import '../../config/app_routes.dart';
+import '../../services/local_storage_service.dart';
+import '../../widgets/common/hexagon_painter.dart';
+import '../../widgets/common/gradient_text.dart';
+import '../../widgets/common/custom_button.dart';
+
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({Key? key}) : super(key: key);
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with TickerProviderStateMixin {
+  final PageController _pc = PageController();
+  int _current = 0;
+
+  late AnimationController _floatCtrl;
+  late AnimationController _pulseCtrl;
+  late Animation<double> _float;
+  late Animation<double> _pulse;
+
+  final _icons = [
+    [Icons.auto_awesome_rounded, Icons.search_rounded],
+    [Icons.dashboard_rounded, Icons.category_rounded],
+    [Icons.content_copy_rounded, Icons.bolt_rounded],
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _floatCtrl = AnimationController(
+        vsync: this, duration: const Duration(seconds: 3))
+      ..repeat(reverse: true);
+    _float = Tween(begin: -10.0, end: 10.0).animate(
+        CurvedAnimation(parent: _floatCtrl, curve: Curves.easeInOut));
+
+    _pulseCtrl = AnimationController(
+        vsync: this, duration: const Duration(seconds: 2))
+      ..repeat(reverse: true);
+    _pulse = Tween(begin: 0.85, end: 1.0).animate(
+        CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _pc.dispose();
+    _floatCtrl.dispose();
+    _pulseCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _complete() async {
+    await LocalStorageService.setOnboardingSeen();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+  }
+
+  void _next() {
+    if (_current < AppConstants.onboardingPages.length - 1) {
+      _pc.nextPage(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOutCubic);
+    } else {
+      _complete();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pages = AppConstants.onboardingPages;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ─── Top Bar ───
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${_current + 1} / ${pages.length}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: AppColors.textPrimary,
+                      letterSpacing: 2,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (_current < pages.length - 1)
+                    GestureDetector(
+                      onTap: _complete,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightInput,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.border.withOpacity(0.5)),
+                        ),
+                        child: Text(
+                          'SKIP',
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            color: AppColors.textSecondary,
+                            letterSpacing: 2,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+            // ─── Pages ───
+            Expanded(
+              child: PageView.builder(
+                controller: _pc,
+                itemCount: pages.length,
+                onPageChanged: (i) => setState(() => _current = i),
+                itemBuilder: (_, i) {
+                  final data = pages[i];
+                  return AnimatedBuilder(
+                    animation: _float,
+                    builder: (_, __) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Spacer(),
+                          Transform.translate(
+                            offset: Offset(0, _float.value),
+                            child: ScaleTransition(
+                              scale: _pulse,
+                              child: SizedBox(
+                                width: 200,
+                                height: 200,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    // Soft Glow
+                                    Container(
+                                      width: 180,
+                                      height: 180,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: AppColors.lightCoral.withOpacity(0.1),
+                                      ),
+                                    ),
+                                    // Main Hexagon
+                                    CustomPaint(
+                                      size: const Size(150, 150),
+                                      painter: HexagonPainter(
+                                        color: AppColors.lightCoral,
+                                        strokeWidth: 2.5,
+                                      ),
+                                    ),
+                                    // Center Icon
+                                    Container(
+                                      width: 80,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: AppColors.buttonGradient,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: AppColors.lightCoral.withOpacity(0.3),
+                                            blurRadius: 20,
+                                            spreadRadius: 2,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Icon(
+                                        _icons[i][0],
+                                        size: 38,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    // Orbiting secondary icon
+                                    Positioned(
+                                      top: 10,
+                                      right: 10,
+                                      child: Container(
+                                        width: 32,
+                                        height: 32,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white,
+                                          border: Border.all(
+                                            color: AppColors.sweetPeony.withOpacity(0.6),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          _icons[i][1],
+                                          size: 16,
+                                          color: AppColors.sweetPeony,
+                                        ),
+                                      ),
+                                    ),
+                                    // Orbiting dot
+                                    Positioned(
+                                      bottom: 15,
+                                      left: 15,
+                                      child: Container(
+                                        width: 12,
+                                        height: 12,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: AppColors.sage,
+                                        ),
+                                      ),
+                                    ),
+                                    // Emoji
+                                    Positioned(
+                                      top: 5,
+                                      left: 25,
+                                      child: Text(
+                                        data['emoji']!,
+                                        style: const TextStyle(fontSize: 18),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 60),
+                          GradientText(
+                            text: data['title']!,
+                            style: GoogleFonts.poppins(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1,
+                            ),
+                            gradient: AppColors.textGradient,
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            data['subtitle']!,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
+                              height: 1.6,
+                            ),
+                          ),
+                          const Spacer(flex: 2),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            // ─── Dots & Button ───
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(pages.length, (i) {
+                bool active = i == _current;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 400),
+                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                  width: active ? 32 : 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: active ? AppColors.lightCoral : AppColors.border,
+                    boxShadow: active
+                        ? [
+                      BoxShadow(
+                        color: AppColors.lightCoral.withOpacity(0.3),
+                        blurRadius: 5,
+                      ),
+                    ]
+                        : [],
+                  ),
+                );
+              }),
+            ),
+
+            const SizedBox(height: 30),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 48),
+              child: CustomButton(
+                text: _current == pages.length - 1 ? 'GET STARTED' : 'NEXT',
+                icon: _current == pages.length - 1
+                    ? Icons.rocket_launch_rounded
+                    : Icons.arrow_forward_rounded,
+                onPressed: _next,
+                width: _current == pages.length - 1 ? 220 : 180,
+              ),
+            ),
+
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
+}
