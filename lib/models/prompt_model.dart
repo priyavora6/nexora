@@ -12,6 +12,17 @@ class PromptModel {
   final String description;
   final DateTime? createdAt;
 
+  final bool hasExample;
+  final String exampleType; 
+  final String? exampleImageUrl;
+  final String? exampleVideoUrl; 
+  final String? thumbnailUrl;
+  final String platformKey; 
+  final String platformUrl; 
+  final bool isFeatured;
+  final List<String> tags;
+  final int usageCount;
+
   PromptModel({
     required this.id,
     required this.title,
@@ -23,12 +34,21 @@ class PromptModel {
     required this.platform,
     this.description = '',
     this.createdAt,
+    this.hasExample = false,
+    this.exampleType = 'none',
+    this.exampleImageUrl,
+    this.exampleVideoUrl,
+    this.thumbnailUrl,
+    this.platformKey = '',
+    this.platformUrl = '',
+    this.isFeatured = false,
+    this.tags = const [],
+    this.usageCount = 0,
   });
 
-  factory PromptModel.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+  factory PromptModel.fromMap(Map<String, dynamic> data, String id) {
     return PromptModel(
-      id: doc.id,
+      id: id,
       title: data['title'] ?? '',
       text: data['text'] ?? '',
       categoryId: data['categoryId'] ?? '',
@@ -38,7 +58,21 @@ class PromptModel {
       platform: data['platform'] ?? 'Other',
       description: data['description'] ?? '',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
+      hasExample: data['hasExample'] ?? false,
+      exampleType: data['exampleType'] ?? 'none',
+      exampleImageUrl: data['exampleImageUrl'],
+      exampleVideoUrl: data['exampleVideoUrl'],
+      thumbnailUrl: data['thumbnailUrl'],
+      platformKey: data['platformKey'] ?? '',
+      platformUrl: data['platformUrl'] ?? '',
+      isFeatured: data['isFeatured'] ?? false,
+      tags: List<String>.from(data['tags'] ?? []),
+      usageCount: data['usageCount'] ?? 0,
     );
+  }
+
+  factory PromptModel.fromDoc(DocumentSnapshot doc) {
+    return PromptModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
   }
 
   Map<String, dynamic> toFirestore() {
@@ -51,7 +85,17 @@ class PromptModel {
       'subcategoryName': subcategoryName,
       'platform': platform,
       'description': description,
-      'createdAt': FieldValue.serverTimestamp(),
+      'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : FieldValue.serverTimestamp(),
+      'hasExample': hasExample,
+      'exampleType': exampleType,
+      'exampleImageUrl': exampleImageUrl,
+      'exampleVideoUrl': exampleVideoUrl,
+      'thumbnailUrl': thumbnailUrl,
+      'platformKey': platformKey,
+      'platformUrl': platformUrl,
+      'isFeatured': isFeatured,
+      'tags': tags,
+      'usageCount': usageCount,
     };
   }
 
@@ -65,6 +109,16 @@ class PromptModel {
     String? subcategoryName,
     String? platform,
     String? description,
+    bool? hasExample,
+    String? exampleType,
+    String? exampleImageUrl,
+    String? exampleVideoUrl,
+    String? thumbnailUrl,
+    String? platformKey,
+    String? platformUrl,
+    bool? isFeatured,
+    List<String>? tags,
+    int? usageCount,
   }) {
     return PromptModel(
       id: id ?? this.id,
@@ -77,6 +131,20 @@ class PromptModel {
       platform: platform ?? this.platform,
       description: description ?? this.description,
       createdAt: createdAt,
+      hasExample: hasExample ?? this.hasExample,
+      exampleType: exampleType ?? this.exampleType,
+      exampleImageUrl: exampleImageUrl ?? this.exampleImageUrl,
+      exampleVideoUrl: exampleVideoUrl ?? this.exampleVideoUrl,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      platformKey: platformKey ?? this.platformKey,
+      platformUrl: platformUrl ?? this.platformUrl,
+      isFeatured: isFeatured ?? this.isFeatured,
+      tags: tags ?? this.tags,
+      usageCount: usageCount ?? this.usageCount,
     );
   }
+
+  bool get hasImageExample => hasExample && exampleType == 'image' && exampleImageUrl != null;
+  bool get hasVideoExample => hasExample && exampleType == 'video' && exampleVideoUrl != null;
+  String? get displayThumbnail => thumbnailUrl ?? exampleImageUrl;
 }

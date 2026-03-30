@@ -8,7 +8,7 @@ class HexagonPainter extends CustomPainter {
   final bool showDot;
 
   HexagonPainter({
-    this.color = AppColors.sweetPeony, // ✅ Updated default color
+    this.color = AppColors.violet, // ✅ Updated default color
     this.strokeWidth = 3.0,
     this.showDot = true,
   });
@@ -49,7 +49,7 @@ class HexagonPainter extends CustomPainter {
           c.dy + r * math.sin(-30 * math.pi / 180),
         ),
         4,
-        Paint()..color = AppColors.lightCoral, // ✅ Updated (was salmon)
+        Paint()..color = AppColors.royalBlue, // ✅ Updated
       );
     }
   }

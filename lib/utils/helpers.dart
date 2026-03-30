@@ -59,17 +59,17 @@ class Helpers {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('CANCEL', style: TextStyle(fontWeight: FontWeight.w800)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: confirmColor),
-            child: Text(confirmText),
+            child: Text(confirmText.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w800)),
           ),
         ],
       ),

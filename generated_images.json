@@ -1,0 +1,902 @@
+{
+  "Golden 50th Portrait": {
+    "title": "Golden 50th Portrait",
+    "category": "Festivals & Occasions",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841035/nexora_festivals_occasions_golden_50th_portrait.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "E-commerce App Logo": {
+    "title": "E-commerce App Logo",
+    "category": "Business & Marketing",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841044/nexora_business_marketing_e_commerce_app_logo.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Kids Clothing Set": {
+    "title": "Kids Clothing Set",
+    "category": "Product & E-commerce",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841052/nexora_product_e_commerce_kids_clothing_set.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Rabbit Flower Portrait": {
+    "title": "Rabbit Flower Portrait",
+    "category": "Animals & Pets",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841062/nexora_animals_pets_rabbit_flower_portrait.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Beachside Fine Dining": {
+    "title": "Beachside Fine Dining",
+    "category": "Food & Restaurant",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841071/nexora_food_restaurant_beachside_fine_dining.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Butcher Shop Expert": {
+    "title": "Butcher Shop Expert",
+    "category": "Food & Restaurant",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841080/nexora_food_restaurant_butcher_shop_expert.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Paris Runway Walk": {
+    "title": "Paris Runway Walk",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841089/nexora_fashion_lifestyle_paris_runway_walk.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Gothic Glamour Look": {
+    "title": "Gothic Glamour Look",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841101/nexora_fashion_lifestyle_gothic_glamour_look.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Cyber-Couture Future": {
+    "title": "Cyber-Couture Future",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841109/nexora_fashion_lifestyle_cyber_couture_future.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Minimalist Luxury Style": {
+    "title": "Minimalist Luxury Style",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841118/nexora_fashion_lifestyle_minimalist_luxury_style.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Monochrome Elegance": {
+    "title": "Monochrome Elegance",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841127/nexora_fashion_lifestyle_monochrome_elegance.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Tokyo Harajuku Style": {
+    "title": "Tokyo Harajuku Style",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841136/nexora_fashion_lifestyle_tokyo_harajuku_style.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Skater Boy/Girl Aesthetic": {
+    "title": "Skater Boy/Girl Aesthetic",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841146/nexora_fashion_lifestyle_skater_boy_girl_aesthetic.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Rainy London Street": {
+    "title": "Rainy London Street",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841155/nexora_fashion_lifestyle_rainy_london_street.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Graffiti Wall Portrait": {
+    "title": "Graffiti Wall Portrait",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841168/nexora_fashion_lifestyle_graffiti_wall_portrait.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "90s Hip Hop Style": {
+    "title": "90s Hip Hop Style",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774841178/nexora_fashion_lifestyle_90s_hip_hop_style.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "The Grand Saree Try-on": {
+    "title": "The Grand Saree Try-on",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792179/nexora_fashion_lifestyle_the_grand_saree_try_on.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Royal Sherwani Makeover": {
+    "title": "Royal Sherwani Makeover",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792235/nexora_fashion_lifestyle_royal_sherwani_makeover.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Indo-Western Fusion": {
+    "title": "Indo-Western Fusion",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792297/nexora_fashion_lifestyle_indo_western_fusion.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Leheriya Festival Vibe": {
+    "title": "Leheriya Festival Vibe",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792452/nexora_fashion_lifestyle_leheriya_festival_vibe.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Designer Nehru Jacket": {
+    "title": "Designer Nehru Jacket",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792480/nexora_fashion_lifestyle_designer_nehru_jacket.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Future Fit Version": {
+    "title": "Future Fit Version",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792488/nexora_fashion_lifestyle_future_fit_version.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Yoga in the Himalayas": {
+    "title": "Yoga in the Himalayas",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792512/nexora_fashion_lifestyle_yoga_in_the_himalayas.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "The Crossfit Challenge": {
+    "title": "The Crossfit Challenge",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792548/nexora_fashion_lifestyle_the_crossfit_challenge.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Aesthetic Home Gym": {
+    "title": "Aesthetic Home Gym",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792569/nexora_fashion_lifestyle_aesthetic_home_gym.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "The Marathon Finisher": {
+    "title": "The Marathon Finisher",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792581/nexora_fashion_lifestyle_the_marathon_finisher.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Digital Glamour Makeover": {
+    "title": "Digital Glamour Makeover",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792634/nexora_fashion_lifestyle_digital_glamour_makeover.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Artistic Eye Makeup": {
+    "title": "Artistic Eye Makeup",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792647/nexora_fashion_lifestyle_artistic_eye_makeup.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "The Bridal Glow": {
+    "title": "The Bridal Glow",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792659/nexora_fashion_lifestyle_the_bridal_glow.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Halloween Spooky Makeup": {
+    "title": "Halloween Spooky Makeup",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792687/nexora_fashion_lifestyle_halloween_spooky_makeup.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Cyber-Beauty Neon": {
+    "title": "Cyber-Beauty Neon",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792737/nexora_fashion_lifestyle_cyber_beauty_neon.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Luxury Watch Add-on": {
+    "title": "Luxury Watch Add-on",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792745/nexora_fashion_lifestyle_luxury_watch_add_on.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Diamond Jewelry Suite": {
+    "title": "Diamond Jewelry Suite",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792753/nexora_fashion_lifestyle_diamond_jewelry_suite.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Cool Aviator Style": {
+    "title": "Cool Aviator Style",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792763/nexora_fashion_lifestyle_cool_aviator_style.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Traditional Gold Bangles": {
+    "title": "Traditional Gold Bangles",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792895/nexora_fashion_lifestyle_traditional_gold_bangles.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Ethnic Jutti & Footwear": {
+    "title": "Ethnic Jutti & Footwear",
+    "category": "Fashion & Lifestyle",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774792915/nexora_fashion_lifestyle_ethnic_jutti_footwear.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Mountain Peak Success": {
+    "title": "Mountain Peak Success",
+    "category": "Social Media",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774796137/nexora_social_media_mountain_peak_success.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Neon Night Stalker": {
+    "title": "Neon Night Stalker",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774855963/nexora_gaming_esports_neon_night_stalker.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Chrome Street Samurai": {
+    "title": "Chrome Street Samurai",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774855973/nexora_gaming_esports_chrome_street_samurai.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Cyber Medic": {
+    "title": "Cyber Medic",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774855982/nexora_gaming_esports_cyber_medic.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Netrunner Specialist": {
+    "title": "Netrunner Specialist",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774855991/nexora_gaming_esports_netrunner_specialist.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Neon Racer": {
+    "title": "Neon Racer",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856009/nexora_gaming_esports_neon_racer.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Cyber Bounty Hunter": {
+    "title": "Cyber Bounty Hunter",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856021/nexora_gaming_esports_cyber_bounty_hunter.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Android Evolution": {
+    "title": "Android Evolution",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856034/nexora_gaming_esports_android_evolution.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Neon Pop Star": {
+    "title": "Neon Pop Star",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856060/nexora_gaming_esports_neon_pop_star.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Skyline Infiltrator": {
+    "title": "Skyline Infiltrator",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856094/nexora_gaming_esports_skyline_infiltrator.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Cyberpunk Monk": {
+    "title": "Cyberpunk Monk",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856109/nexora_gaming_esports_cyberpunk_monk.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Golden Knight": {
+    "title": "Golden Knight",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856126/nexora_gaming_esports_golden_knight.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Elven Archer": {
+    "title": "Elven Archer",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856146/nexora_gaming_esports_elven_archer.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Dark Sorcerer": {
+    "title": "Dark Sorcerer",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856167/nexora_gaming_esports_dark_sorcerer.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Viking Chieftain": {
+    "title": "Viking Chieftain",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856186/nexora_gaming_esports_viking_chieftain.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Dragon Rider": {
+    "title": "Dragon Rider",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856200/nexora_gaming_esports_dragon_rider.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Paladin of Light": {
+    "title": "Paladin of Light",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856228/nexora_gaming_esports_paladin_of_light.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Forest Ranger": {
+    "title": "Forest Ranger",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856248/nexora_gaming_esports_forest_ranger.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Barbarian Conqueror": {
+    "title": "Barbarian Conqueror",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856276/nexora_gaming_esports_barbarian_conqueror.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Shadow Assassin": {
+    "title": "Shadow Assassin",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856310/nexora_gaming_esports_shadow_assassin.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Phoenix Mage": {
+    "title": "Phoenix Mage",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856325/nexora_gaming_esports_phoenix_mage.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Pro Arena Setup": {
+    "title": "Pro Arena Setup",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856339/nexora_gaming_esports_pro_arena_setup.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Victory Moment": {
+    "title": "Victory Moment",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856356/nexora_gaming_esports_victory_moment.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "The Console Gamer": {
+    "title": "The Console Gamer",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856378/nexora_gaming_esports_the_console_gamer.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Mobile Pro Player": {
+    "title": "Mobile Pro Player",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856409/nexora_gaming_esports_mobile_pro_player.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Streaming Legend": {
+    "title": "Streaming Legend",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856464/nexora_gaming_esports_streaming_legend.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Esports Team Captain": {
+    "title": "Esports Team Captain",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856519/nexora_gaming_esports_esports_team_captain.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Late Night Grinding": {
+    "title": "Late Night Grinding",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856539/nexora_gaming_esports_late_night_grinding.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Retro Game Stream": {
+    "title": "Retro Game Stream",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856562/nexora_gaming_esports_retro_game_stream.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "VR Explorer": {
+    "title": "VR Explorer",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856608/nexora_gaming_esports_vr_explorer.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Vice City Vibe": {
+    "title": "Vice City Vibe",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856627/nexora_gaming_esports_vice_city_vibe.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "San Andreas Gangster": {
+    "title": "San Andreas Gangster",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856644/nexora_gaming_esports_san_andreas_gangster.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Los Santos Luxury": {
+    "title": "Los Santos Luxury",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856663/nexora_gaming_esports_los_santos_luxury.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Biker Outlaw": {
+    "title": "Biker Outlaw",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856685/nexora_gaming_esports_biker_outlaw.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "The Heist Leader": {
+    "title": "The Heist Leader",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856700/nexora_gaming_esports_the_heist_leader.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Beachside Hustler": {
+    "title": "Beachside Hustler",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856716/nexora_gaming_esports_beachside_hustler.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Underground Racer": {
+    "title": "Underground Racer",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856841/nexora_gaming_esports_underground_racer.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "The Mafia Boss": {
+    "title": "The Mafia Boss",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856859/nexora_gaming_esports_the_mafia_boss.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Hacker Rogue": {
+    "title": "Hacker Rogue",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856875/nexora_gaming_esports_hacker_rogue.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Pixar Style Hero": {
+    "title": "Pixar Style Hero",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856894/nexora_gaming_esports_pixar_style_hero.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Overwatch Agent": {
+    "title": "Overwatch Agent",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856907/nexora_gaming_esports_overwatch_agent.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Fortnite Skin": {
+    "title": "Fortnite Skin",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856919/nexora_gaming_esports_fortnite_skin.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Final Fantasy Hero": {
+    "title": "Final Fantasy Hero",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856932/nexora_gaming_esports_final_fantasy_hero.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Mobile RPG Avatar": {
+    "title": "Mobile RPG Avatar",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856947/nexora_gaming_esports_mobile_rpg_avatar.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Sci-Fi Soldier": {
+    "title": "Sci-Fi Soldier",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856966/nexora_gaming_esports_sci_fi_soldier.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Horror Game Protagonist": {
+    "title": "Horror Game Protagonist",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774856996/nexora_gaming_esports_horror_game_protagonist.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Street Fighter Pro": {
+    "title": "Street Fighter Pro",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857024/nexora_gaming_esports_street_fighter_pro.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Cyber-Ninjas": {
+    "title": "Cyber-Ninjas",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857045/nexora_gaming_esports_cyber_ninjas.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Iron Avenger": {
+    "title": "Iron Avenger",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857088/nexora_gaming_esports_iron_avenger.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Caped Crusader": {
+    "title": "Caped Crusader",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857100/nexora_gaming_esports_caped_crusader.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Cosmic Goddess": {
+    "title": "Cosmic Goddess",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857114/nexora_gaming_esports_cosmic_goddess.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Speedster Flash": {
+    "title": "Speedster Flash",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857126/nexora_gaming_esports_speedster_flash.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Amazonian Warrior": {
+    "title": "Amazonian Warrior",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857138/nexora_gaming_esports_amazonian_warrior.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Tactical Spy Hero": {
+    "title": "Tactical Spy Hero",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857149/nexora_gaming_esports_tactical_spy_hero.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Nature Guardian": {
+    "title": "Nature Guardian",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857160/nexora_gaming_esports_nature_guardian.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Spider-Verse Hero": {
+    "title": "Spider-Verse Hero",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857172/nexora_gaming_esports_spider_verse_hero.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Winter Soldier": {
+    "title": "Winter Soldier",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857182/nexora_gaming_esports_winter_soldier.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Magic Sorceress": {
+    "title": "Magic Sorceress",
+    "category": "Gaming & Esports",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857194/nexora_gaming_esports_magic_sorceress.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "NYC Skyline Night": {
+    "title": "NYC Skyline Night",
+    "category": "Architecture & Interiors",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857209/nexora_architecture_interiors_nyc_skyline_night.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Morning Sun Loft": {
+    "title": "Morning Sun Loft",
+    "category": "Architecture & Interiors",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857222/nexora_architecture_interiors_morning_sun_loft.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Dark Marble Luxury": {
+    "title": "Dark Marble Luxury",
+    "category": "Architecture & Interiors",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857236/nexora_architecture_interiors_dark_marble_luxury.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Dubai View Infinity": {
+    "title": "Dubai View Infinity",
+    "category": "Architecture & Interiors",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857251/nexora_architecture_interiors_dubai_view_infinity.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Minimalist Zen Suite": {
+    "title": "Minimalist Zen Suite",
+    "category": "Architecture & Interiors",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857272/nexora_architecture_interiors_minimalist_zen_suite.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  },
+  "Champagne Celebration": {
+    "title": "Champagne Celebration",
+    "category": "Architecture & Interiors",
+    "subcategory": "General",
+    "platform": "Midjourney",
+    "cloudinaryUrl": "https://res.cloudinary.com/dli0cf2x3/image/upload/v1774857297/nexora_architecture_interiors_champagne_celebration.jpg",
+    "videoUrl": "",
+    "isFeatured": "false"
+  }
+}

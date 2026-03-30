@@ -1,10 +1,11 @@
+// lib/screens/home/home_screen.dart
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
-import '../../models/category_model.dart';
 import '../../models/prompt_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/prompt_provider.dart';
@@ -17,9 +18,9 @@ class HomeScreen extends StatelessWidget {
 
   String _getGreeting() {
     var hour = DateTime.now().hour;
-    if (hour < 12) return 'good morning';
-    if (hour < 17) return 'good afternoon';
-    return 'good evening';
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
   }
 
   String _getTagline() {
@@ -33,10 +34,12 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
     final promptProv = Provider.of<PromptProvider>(context);
+    final theme = Theme.of(context);
+    final userInterests = auth.userInterests;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const GradientAppBar(title: 'nexora'),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: const GradientAppBar(title: 'NEXORA'),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -44,7 +47,6 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               // ─── 1. EXECUTIVE HEADER ───
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 40, 24, 0),
@@ -61,19 +63,15 @@ class HomeScreen extends StatelessWidget {
                             children: [
                               Text(
                                 '${_getGreeting()}, ',
-                                style: GoogleFonts.poppins(  // ✅ Changed
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
+                                style: theme.textTheme.bodyMedium?.copyWith(
                                   color: AppColors.textSecondary.withOpacity(0.6),
                                 ),
                               ),
                               Flexible(
                                 child: Text(
-                                  auth.userName.toLowerCase(),
-                                  style: GoogleFonts.poppins(  // ✅ Changed
-                                    fontSize: 18,
+                                  auth.userName,
+                                  style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimary,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -83,10 +81,8 @@ class HomeScreen extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             _getTagline(),
-                            style: GoogleFonts.poppins(  // ✅ Changed
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.sage,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppColors.lavender,
                               fontStyle: FontStyle.italic,
                             ),
                           ),
@@ -97,53 +93,24 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 36),
+              const SizedBox(height: 48),
 
-              // ─── 2. LUXURY SEARCH ───
+              // ─── 2. DAILY INSPIRATION (Global Random Prompt) ───
+              _sectionHeader(context, 'DAILY INSPIRATION', null),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _buildLuxurySearch(context),
+                child: _buildDailyPrompt(promptProv),
               ),
 
               const SizedBox(height: 48),
 
-              // ─── 3. COLLECTIONS ───
-              _sectionHeader(context, 'Collections', AppRoutes.categories),
-              const SizedBox(height: 20),
-              _buildStoryCategories(promptProv),
-
-              const SizedBox(height: 48),
-
-              // ─── 4. DAILY DISCOVERY ───
-              _sectionHeader(context, 'Daily Discovery', null),
+              // ─── 3. CURATED FOR YOU (Max 10 from Interests) ───
+              _sectionHeader(context, 'CURATED FOR YOU', null),
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: StreamBuilder<List<PromptModel>>(
-                  stream: promptProv.trendingPromptsStream,
-                  builder: (context, snap) {
-                    if (!snap.hasData) {
-                      return const Center(
-                        child: CircularProgressIndicator(color: AppColors.lightCoral),
-                      );
-                    }
-                    final prompts = snap.data!;
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: prompts.length > 8 ? 8 : prompts.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 16),
-                      itemBuilder: (context, i) => PromptCard(
-                        prompt: prompts[i],
-                        onTap: () => Navigator.pushNamed(
-                          context,
-                          AppRoutes.promptDetail,
-                          arguments: {'promptId': prompts[i].id},
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                child: _buildCuratedPrompts(context, promptProv, userInterests),
               ),
 
               const SizedBox(height: 120),
@@ -154,16 +121,16 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ─── WIDGET: AVATAR WITH ORBIT RING ───
+  // ─── WIDGET: AVATAR ───
   Widget _buildOrbitAvatar(BuildContext context, String name) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+      onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
       child: Container(
         padding: const EdgeInsets.all(3),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: AppColors.lightCoral.withOpacity(0.15),
+            color: AppColors.royalBlue.withOpacity(0.15),
             width: 1,
           ),
         ),
@@ -175,7 +142,7 @@ class HomeScreen extends StatelessWidget {
             gradient: AppColors.navGradient,
             boxShadow: [
               BoxShadow(
-                color: AppColors.lightCoral.withOpacity(0.2),
+                color: AppColors.royalBlue.withOpacity(0.2),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
@@ -184,7 +151,7 @@ class HomeScreen extends StatelessWidget {
           child: Center(
             child: Text(
               name.isNotEmpty ? name[0].toUpperCase() : 'U',
-              style: GoogleFonts.poppins(  // ✅ Changed
+              style: GoogleFonts.inter(
                 color: Colors.white,
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
@@ -196,96 +163,107 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ─── WIDGET: LUXURY SEARCH ───
-  Widget _buildLuxurySearch(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, AppRoutes.search),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF8F8F8),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.grey[200]!),
-        ),
-        child: Row(
-          children: [
-            const Icon(
-              Icons.search_rounded,
-              color: AppColors.lightCoral,
-              size: 22,
-            ),
-            const SizedBox(width: 14),
-            Text(
-              'Search for inspiration...',
-              style: GoogleFonts.poppins(  // ✅ Changed
-                fontSize: 14,
-                color: Colors.grey[400],
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
+  // ─── WIDGET: DAILY PROMPT (1 Random from Global Pool) ───
+  Widget _buildDailyPrompt(PromptProvider prov) {
+    return StreamBuilder<List<PromptModel>>(
+      stream: prov.promptsStream,
+      builder: (context, snap) {
+        if (!snap.hasData || snap.data!.isEmpty) {
+          return const SizedBox(
+            height: 150,
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          );
+        }
+
+        final allPrompts = snap.data!;
+
+        // ✅ Seeded randomness based on date (YYYYMMDD) 
+        // This ensures the same random prompt is shown for 24 hours.
+        final now = DateTime.now();
+        final seed = now.year * 10000 + now.month * 100 + now.day;
+        final random = Random(seed);
+        final dailyPrompt = allPrompts[random.nextInt(allPrompts.length)];
+
+        return PromptCard(
+          prompt: dailyPrompt,
+          onTap: () => Navigator.pushNamed(
+            context,
+            AppRoutes.promptDetail,
+            arguments: {'promptId': dailyPrompt.id},
+          ),
+        );
+      },
     );
   }
 
-  // ─── WIDGET: CIRCLE COLLECTIONS ───
-  Widget _buildStoryCategories(PromptProvider prov) {
-    return StreamBuilder<List<CategoryModel>>(
-      stream: prov.categoriesStream,
+  // ─── WIDGET: CURATED PROMPTS (Max 10 from Interests) ───
+  Widget _buildCuratedPrompts(BuildContext context, PromptProvider prov, List<String> userInterests) {
+    return StreamBuilder<List<PromptModel>>(
+      stream: prov.getPromptsForInterests(userInterests),
       builder: (context, snap) {
-        if (!snap.hasData) return const SizedBox(height: 100);
-        return SizedBox(
-          height: 100,
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: snap.data!.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 20),
-            itemBuilder: (_, i) {
-              final cat = snap.data![i];
-              return GestureDetector(
-                onTap: () => Navigator.pushNamed(
-                  context,
-                  AppRoutes.categoryDetail,
-                  arguments: {
-                    'categoryId': cat.id,
-                    'categoryName': cat.name,
-                    'categoryColor': cat.color,
-                  },
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 64,
-                      width: 64,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey[100]!),
-                      ),
-                      child: Center(
-                        child: Text(
-                          cat.icon,
-                          style: const TextStyle(fontSize: 26),
-                        ),
-                      ),
+        if (!snap.hasData) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(40),
+              child: CircularProgressIndicator(color: AppColors.royalBlue),
+            ),
+          );
+        }
+
+        final curatedPrompts = snap.data!;
+
+        if (curatedPrompts.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(40),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.auto_awesome_outlined,
+                    size: 48,
+                    color: AppColors.royalBlue.withOpacity(0.4),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No prompts found for your interests',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      cat.name.toLowerCase(),
-                      style: GoogleFonts.poppins(  // ✅ Changed
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Try updating your interests in settings',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppColors.textHint,
                     ),
-                  ],
-                ),
-              );
-            },
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final displayList = curatedPrompts.length > 10 
+            ? curatedPrompts.take(10).toList() 
+            : curatedPrompts;
+
+        return ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: displayList.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 16),
+          itemBuilder: (context, i) => PromptCard(
+            prompt: displayList[i],
+            onTap: () => Navigator.pushNamed(
+              context,
+              AppRoutes.promptDetail,
+              arguments: {'promptId': displayList[i].id},
+            ),
           ),
         );
       },
@@ -294,6 +272,7 @@ class HomeScreen extends StatelessWidget {
 
   // ─── WIDGET: SECTION HEADER ───
   Widget _sectionHeader(BuildContext context, String title, String? route) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
@@ -302,23 +281,21 @@ class HomeScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: GoogleFonts.poppins(  // ✅ Changed
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: Colors.black,
-              letterSpacing: -0.3,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.2,
             ),
           ),
           if (route != null)
             GestureDetector(
-              onTap: () => Navigator.pushReplacementNamed(context, route),
+              onTap: () => Navigator.pushNamed(context, route),
               child: Text(
-                'see all',
-                style: GoogleFonts.poppins(  // ✅ Changed
-                  fontSize: 12,
-                  color: AppColors.lightCoral,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
+                'SEE ALL',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: AppColors.royalBlue,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
                 ),
               ),
             ),

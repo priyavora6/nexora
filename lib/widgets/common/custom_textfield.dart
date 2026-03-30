@@ -12,6 +12,7 @@ class CustomTextField extends StatefulWidget {
   final TextInputType keyboardType;
   final int maxLines;
   final void Function(String)? onChanged;
+  final TextAlign textAlign;
 
   const CustomTextField({
     Key? key,
@@ -24,6 +25,7 @@ class CustomTextField extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.maxLines = 1,
     this.onChanged,
+    this.textAlign = TextAlign.start,
   }) : super(key: key);
 
   @override
@@ -42,18 +44,27 @@ class _CustomTextFieldState extends State<CustomTextField> {
       keyboardType: widget.keyboardType,
       maxLines: widget.isPassword ? 1 : widget.maxLines,
       onChanged: widget.onChanged,
-      style: GoogleFonts.raleway(
+      textAlign: widget.textAlign,
+      style: GoogleFonts.inter(
         fontSize: 15,
         fontWeight: FontWeight.w500,
-        color: Theme.of(context).textTheme.bodyLarge?.color,
+        color: AppColors.textPrimary,
       ),
       decoration: InputDecoration(
         hintText: widget.hint,
+        hintStyle: GoogleFonts.inter(
+          fontSize: 14,
+          color: AppColors.textHint,
+        ),
         labelText: widget.label,
+        labelStyle: GoogleFonts.inter(
+          fontSize: 14,
+          color: AppColors.textSecondary,
+        ),
         prefixIcon: widget.prefixIcon != null
             ? Icon(
           widget.prefixIcon,
-          color: AppColors.lightCoral, // ✅ Updated color
+          color: AppColors.royalBlue,
           size: 22,
         )
             : null,
@@ -63,12 +74,27 @@ class _CustomTextFieldState extends State<CustomTextField> {
             _obscure
                 ? Icons.visibility_off_rounded
                 : Icons.visibility_rounded,
-            color: AppColors.smokyRose.withOpacity(0.5), // ✅ Updated color
+            color: AppColors.indigo.withOpacity(0.5),
             size: 22,
           ),
           onPressed: () => setState(() => _obscure = !_obscure),
         )
             : null,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        filled: true,
+        fillColor: AppColors.lightInput,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.royalBlue, width: 1.5),
+        ),
       ),
     );
   }

@@ -6,14 +6,14 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final bool showBack;
-  final VoidCallback? onBackPressed; // ✅ Added
+  final VoidCallback? onBackPressed;
 
   const GradientAppBar({
     Key? key,
     required this.title,
     this.actions,
     this.showBack = false,
-    this.onBackPressed, // ✅ Added
+    this.onBackPressed,
   }) : super(key: key);
 
   @override
@@ -26,20 +26,28 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
         gradient: AppColors.navGradient,
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightCoral.withOpacity(0.3),
+            color: AppColors.royalBlue.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: AppBar(
-        title: Text(
-          title.toUpperCase(),
-          style: GoogleFonts.playfairDisplay(
-            fontSize: 22,
-            fontWeight: FontWeight.w900,
-            color: Colors.white,
-            letterSpacing: 1.5,
+        // --- PROPER HEADER FIX: Text will never cut ---
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: Text(
+              title, // Using Title Case for "Proper" look and space saving
+              style: GoogleFonts.inter(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+                letterSpacing: -0.5,
+              ),
+            ),
           ),
         ),
         centerTitle: true,
@@ -50,7 +58,6 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
             color: Colors.white,
             size: 20,
           ),
-          // ✅ Use custom callback or default pop
           onPressed: onBackPressed ?? () => Navigator.pop(context),
         )
             : null,

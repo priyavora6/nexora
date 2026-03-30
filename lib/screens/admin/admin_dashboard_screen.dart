@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
-import '../../services/seed_data_service.dart';
+import '../../services/seed/seed_data_service.dart';
+import '../../services/seed/category_data.dart';
+import '../../data/prompt_library.dart';
 import '../../utils/helpers.dart';
 import '../../widgets/layout/gradient_app_bar.dart';
 
@@ -18,42 +19,84 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  final FirestoreService _fs = FirestoreService();
+
   bool _seeding = false;
   String _seedStatus = '';
+
+  int _categoryCount = 0;
+  int _promptCount = 0;
+  
+  int _libraryCategoryCount = 0;
+  int _libraryPromptCount = 0;
+  
+  bool _loadingStats = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-calculate library totals
+    _libraryCategoryCount = CategoryData.getAllCategories().length;
+    _libraryPromptCount = PromptLibrary.getAllPrompts().length;
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    try {
+      final cats = await _fs.getTotalCategories();
+      final prompts = await _fs.getTotalPrompts();
+
+      if (mounted) {
+        setState(() {
+          _categoryCount = cats;
+          _promptCount = prompts;
+          _loadingStats = false;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading stats: $e");
+      if (mounted) setState(() => _loadingStats = false);
+    }
+  }
 
   Future<void> _seedData() async {
     final confirm = await Helpers.showConfirmDialog(
       context,
-      title: 'Seed All Data',
-      message:
-      'This will add 33 categories and 990 prompts to Firestore. Continue?',
-      confirmText: 'Seed Data',
-      confirmColor: AppColors.lightCoral,
+      title: 'SEED ALL DATA',
+      message: 'This will add $_libraryCategoryCount categories and ~$_libraryPromptCount prompts to Firestore. Continue?',
+      confirmText: 'SEED DATA',
+      confirmColor: AppColors.royalBlue,
     );
 
     if (!confirm) return;
 
     setState(() {
       _seeding = true;
-      _seedStatus = 'Starting...';
+      _seedStatus = 'STARTING INITIALIZATION...';
     });
 
     try {
       await SeedDataService().seedAllData(
         onProgress: (status) {
           if (mounted) {
-            setState(() => _seedStatus = status);
+            setState(() => _seedStatus = status.toUpperCase());
+            // Refresh stats periodically during seeding to show progress
+            if (status.contains('📁') || status.contains('🎉')) {
+              _loadStats();
+            }
           }
         },
       );
 
-      // ✅ Success message
       if (mounted) {
-        setState(() => _seedStatus = '✅ Data seeded successfully!');
+        setState(() {
+          _seedStatus = '✅ DATA SEEDED SUCCESSFULLY!';
+        });
+        await _loadStats();
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _seedStatus = '❌ Error: $e');
+        setState(() => _seedStatus = '❌ ERROR: ${e.toString().toUpperCase()}');
       }
     } finally {
       if (mounted) {
@@ -65,72 +108,63 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
-    final fs = FirestoreService();
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-
-      // ✅ Gradient AppBar with logout
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: GradientAppBar(
         title: 'ADMIN PANEL',
-        showBack: false, // ✅ No back button for admin dashboard
+        showBack: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout_rounded, color: Colors.white),
-            tooltip: 'Logout',
+            tooltip: 'LOGOUT',
             onPressed: () async {
               final confirm = await Helpers.showConfirmDialog(
                 context,
-                title: 'Logout',
+                title: 'LOGOUT',
                 message: 'Are you sure you want to logout?',
-                confirmText: 'Logout',
+                confirmText: 'LOGOUT',
                 confirmColor: AppColors.error,
               );
 
               if (confirm) {
                 await auth.signOut();
                 if (!mounted) return;
-
-                // 🔥 CHANGED HERE: Redirect to login and clear all history
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   AppRoutes.login,
-                      (route) => false,
+                  (route) => false,
                 );
               }
             },
           ),
         ],
       ),
-
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ─── Stats Section ───
+              // ─── TOP STATS (Comparative) ───
               Row(
                 children: [
                   Expanded(
-                    child: FutureBuilder<int>(
-                      future: fs.getTotalCategories(),
-                      builder: (_, s) => _statCard(
-                        'Categories',
-                        '${s.data ?? 0}',
-                        Icons.dashboard_rounded,
-                      ),
+                    child: _statCard(
+                      'CATEGORIES',
+                      _loadingStats ? '...' : '$_categoryCount / $_libraryCategoryCount',
+                      Icons.dashboard_rounded,
+                      theme,
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: FutureBuilder<int>(
-                      future: fs.getTotalPrompts(),
-                      builder: (_, s) => _statCard(
-                        'Prompts',
-                        '${s.data ?? 0}',
-                        Icons.description_rounded,
-                      ),
+                    child: _statCard(
+                      'PROMPTS',
+                      _loadingStats ? '...' : '$_promptCount / $_libraryPromptCount',
+                      Icons.description_rounded,
+                      theme,
                     ),
                   ),
                 ],
@@ -138,13 +172,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
               const SizedBox(height: 32),
 
-              // ─── Seed Data Section ───
               Text(
-                "Data Management",
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                "DATA MANAGEMENT",
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                  color: AppColors.royalBlue,
                 ),
               ),
 
@@ -152,13 +185,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
               _actionTile(
                 context,
-                '🌱 Seed All Data (990 Prompts)',
-                Icons.cloud_upload_rounded,
-                _seeding ? null : _seedData,
-                color: AppColors.success,
+                title: _seeding ? 'SEEDING IN PROGRESS...' : '🌱 SEED ALL DATA',
+                icon: Icons.cloud_upload_rounded,
+                onTap: _seeding ? null : _seedData,
+                color: _seeding ? Colors.grey : AppColors.success,
+                theme: theme,
               ),
 
-              // ─── Seeding Status Area ───
               if (_seedStatus.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Container(
@@ -176,18 +209,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     children: [
                       if (_seeding) ...[
                         const LinearProgressIndicator(
-                          color: AppColors.lightCoral,
-                          backgroundColor: Colors.white,
+                          color: AppColors.royalBlue,
+                          backgroundColor: Colors.white10,
                         ),
                         const SizedBox(height: 12),
                       ],
                       Text(
                         _seedStatus,
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          height: 1.5,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ],
@@ -197,13 +228,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
               const SizedBox(height: 32),
 
-              // ─── Content Management Section ───
               Text(
-                "Content Management",
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                "CONTENT MANAGEMENT",
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                  color: AppColors.royalBlue,
                 ),
               ),
 
@@ -211,36 +241,40 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
               _actionTile(
                 context,
-                'Manage Categories',
-                Icons.category_rounded,
-                    () => Navigator.pushNamed(context, AppRoutes.manageCategories),
+                title: 'MANAGE CATEGORIES',
+                icon: Icons.category_rounded,
+                onTap: () => Navigator.pushNamed(context, AppRoutes.manageCategories).then((_) => _loadStats()),
+                theme: theme,
               ),
 
               const SizedBox(height: 12),
 
               _actionTile(
                 context,
-                'Manage Prompts',
-                Icons.edit_note_rounded,
-                    () => Navigator.pushNamed(context, AppRoutes.managePrompts),
+                title: 'MANAGE PROMPTS',
+                icon: Icons.edit_note_rounded,
+                onTap: () => Navigator.pushNamed(context, AppRoutes.managePrompts).then((_) => _loadStats()),
+                theme: theme,
               ),
 
               const SizedBox(height: 12),
 
               _actionTile(
                 context,
-                'Add New Category',
-                Icons.add_circle_rounded,
-                    () => Navigator.pushNamed(context, AppRoutes.addEditCategory),
+                title: 'ADD NEW CATEGORY',
+                icon: Icons.add_circle_rounded,
+                onTap: () => Navigator.pushNamed(context, AppRoutes.addEditCategory).then((_) => _loadStats()),
+                theme: theme,
               ),
 
               const SizedBox(height: 12),
 
               _actionTile(
                 context,
-                'Add New Prompt',
-                Icons.post_add_rounded,
-                    () => Navigator.pushNamed(context, AppRoutes.addEditPrompt),
+                title: 'ADD NEW PROMPT',
+                icon: Icons.post_add_rounded,
+                onTap: () => Navigator.pushNamed(context, AppRoutes.addEditPrompt).then((_) => _loadStats()),
+                theme: theme,
               ),
 
               const SizedBox(height: 32),
@@ -251,13 +285,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _statCard(String label, String value, IconData icon) {
+  Widget _statCard(String label, String value, IconData icon, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border.withOpacity(0.5)),
+        border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -268,24 +302,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
       child: Column(
         children: [
-          Icon(icon, color: AppColors.lightCoral, size: 32),
+          Icon(icon, color: AppColors.royalBlue, size: 32),
           const SizedBox(height: 12),
           Text(
             value,
-            style: GoogleFonts.poppins(
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              fontSize: 10,
+              letterSpacing: 1,
             ),
           ),
         ],
@@ -294,11 +324,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _actionTile(
-      BuildContext context,
-      String title,
-      IconData icon,
-      VoidCallback? onTap, {
+      BuildContext context, {
+        required String title,
+        required IconData icon,
+        VoidCallback? onTap,
         Color? color,
+        required ThemeData theme,
       }) {
     return GestureDetector(
       onTap: onTap,
@@ -307,9 +338,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border.withOpacity(0.4)),
+            border: Border.all(color: Colors.grey[100]!),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.03),
@@ -320,22 +351,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ),
           child: Row(
             children: [
-              Icon(icon, color: color ?? AppColors.lightCoral, size: 24),
+              Icon(icon, color: color ?? AppColors.royalBlue, size: 24),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                    fontSize: 12,
                   ),
                 ),
               ),
               const Icon(
                 Icons.arrow_forward_ios_rounded,
-                size: 16,
-                color: AppColors.sage,
+                size: 14,
+                color: AppColors.lavender,
               ),
             ],
           ),

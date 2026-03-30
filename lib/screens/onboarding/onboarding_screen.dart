@@ -78,7 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final pages = AppConstants.onboardingPages;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.lightScaffold,
       body: SafeArea(
         child: Column(
           children: [
@@ -90,11 +90,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 children: [
                   Text(
                     '${_current + 1} / ${pages.length}',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
                       letterSpacing: 2,
-                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                   if (_current < pages.length - 1)
@@ -106,15 +106,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         decoration: BoxDecoration(
                           color: AppColors.lightInput,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.border.withOpacity(0.5)),
+                          border: Border.all(color: AppColors.border),
                         ),
-                        child: Text(
+                        child: const Text(
                           'SKIP',
-                          style: GoogleFonts.poppins(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
-                            letterSpacing: 2,
-                            fontWeight: FontWeight.w700,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1,
+                            color: AppColors.royalBlue,
                           ),
                         ),
                       ),
@@ -149,24 +149,24 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 child: Stack(
                                   alignment: Alignment.center,
                                   children: [
-                                    // Soft Glow
+                                    // Background Circle Glow (Blue tint)
                                     Container(
                                       width: 180,
                                       height: 180,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: AppColors.lightCoral.withOpacity(0.1),
+                                        color: AppColors.royalBlue.withOpacity(0.08),
                                       ),
                                     ),
-                                    // Main Hexagon
+                                    // Hexagon Outline (Indigo)
                                     CustomPaint(
                                       size: const Size(150, 150),
                                       painter: HexagonPainter(
-                                        color: AppColors.lightCoral,
+                                        color: AppColors.indigo.withOpacity(0.4),
                                         strokeWidth: 2.5,
                                       ),
                                     ),
-                                    // Center Icon
+                                    // Main Center Icon (Blue/Purple Gradient)
                                     Container(
                                       width: 80,
                                       height: 80,
@@ -175,8 +175,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                         gradient: AppColors.buttonGradient,
                                         boxShadow: [
                                           BoxShadow(
-                                            color: AppColors.lightCoral.withOpacity(0.3),
-                                            blurRadius: 20,
+                                            color: AppColors.royalBlue.withOpacity(0.3),
+                                            blurRadius: 25,
                                             spreadRadius: 2,
                                           ),
                                         ],
@@ -187,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                         color: Colors.white,
                                       ),
                                     ),
-                                    // Orbiting secondary icon
+                                    // Top Right Small Badge (Purple/Violet)
                                     Positioned(
                                       top: 10,
                                       right: 10,
@@ -195,34 +195,39 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                         width: 32,
                                         height: 32,
                                         decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.white,
-                                          border: Border.all(
-                                            color: AppColors.sweetPeony.withOpacity(0.6),
-                                            width: 1.5,
-                                          ),
+                                            shape: BoxShape.circle,
+                                            color: Colors.white,
+                                            border: Border.all(
+                                              color: AppColors.violet.withOpacity(0.4),
+                                              width: 1.5,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.05),
+                                                blurRadius: 5,
+                                              )
+                                            ]
                                         ),
                                         child: Icon(
                                           _icons[i][1],
                                           size: 16,
-                                          color: AppColors.sweetPeony,
+                                          color: AppColors.violet,
                                         ),
                                       ),
                                     ),
-                                    // Orbiting dot
+                                    // Small Accent Dot (Lavender)
                                     Positioned(
                                       bottom: 15,
                                       left: 15,
                                       child: Container(
                                         width: 12,
                                         height: 12,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: AppColors.sage,
+                                          color: AppColors.lavender,
                                         ),
                                       ),
                                     ),
-                                    // Emoji
                                     Positioned(
                                       top: 5,
                                       left: 25,
@@ -237,24 +242,26 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             ),
                           ),
                           const SizedBox(height: 60),
+                          // Gradient Title (Blue/Purple)
                           GradientText(
-                            text: data['title']!,
-                            style: GoogleFonts.poppins(
+                            text: data['title']!.toUpperCase(),
+                            style: GoogleFonts.inter(
                               fontSize: 28,
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w900,
                               letterSpacing: 1,
                             ),
                             gradient: AppColors.textGradient,
                           ),
                           const SizedBox(height: 20),
+                          // Subtitle Text
                           Text(
                             data['subtitle']!,
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.inter(
                               fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textSecondary,
                               height: 1.6,
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           const Spacer(flex: 2),
@@ -278,12 +285,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   height: 10,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
-                    color: active ? AppColors.lightCoral : AppColors.border,
+                    color: active ? AppColors.royalBlue : AppColors.border,
                     boxShadow: active
                         ? [
                       BoxShadow(
-                        color: AppColors.lightCoral.withOpacity(0.3),
-                        blurRadius: 5,
+                        color: AppColors.royalBlue.withOpacity(0.2),
+                        blurRadius: 8,
                       ),
                     ]
                         : [],

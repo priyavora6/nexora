@@ -4,68 +4,59 @@ class AppColors {
   AppColors._();
 
   // ═════════════════════════════════════════════════════════════
-  // 🌿 NEXORA CORE PALETTE (Inspired by Logo)
+  // 🌌 NEXORA BLUE & PURPLE PALETTE (Professional & Modern)
   // ═════════════════════════════════════════════════════════════
 
-  // Primary Brand Colors (Refined to match logo tones)
-  static const Color sage         = Color(0xFFAFC5B3); // Refined Soft Sage
-  static const Color powderBlush  = Color(0xFFEEC8BE); // Softer Peach
-  static const Color lightCoral   = Color(0xFFE57F7A); // Vibrant Coral
-  static const Color sweetPeony   = Color(0xFFC86C94); // Elegant Pink
-  static const Color smokyRose    = Color(0xFF6E4E55); // Deep Muted Rose
+  // Primary Brand Colors
+  static const Color deepNavy     = Color(0xFF1A237E); // Professional Deep Navy
+  static const Color royalBlue    = Color(0xFF3949AB); // Rich Royal Blue
+  static const Color indigo       = Color(0xFF5C6BC0); // Vibrant Indigo
+  static const Color violet       = Color(0xFF7E57C2); // Creative Violet
+  static const Color lavender     = Color(0xFF9575CD); // Soft Lavender
+  static const Color mistyBlue    = Color(0xFFE8EAF6); // Very Light Blue Background
 
   // ═════════════════════════════════════════════════════════════
-  // ⚪ LIGHT THEME
+  // ⚪ LIGHT THEME (Clean & Modern)
   // ═════════════════════════════════════════════════════════════
 
   static const Color lightScaffold = Colors.white;
   static const Color lightCard     = Colors.white;
-  static const Color lightInput    = Color(0xFFFDF9F8);
+  static const Color lightInput    = Color(0xFFF5F7FF); // Faint Blue Tint for inputs
 
-  static const Color textPrimary   = Color(0xFF2A2326);
-  static const Color textSecondary = Color(0xFF7C5A61);
-  static const Color textHint      = Color(0xFFBDAEB2);
-
-  // ═════════════════════════════════════════════════════════════
-  // ⚫ DARK THEME (For your dark mode)
-  // ═════════════════════════════════════════════════════════════
-
-  static const Color darkScaffold = Color(0xFF121212);
-  static const Color darkCard     = Color(0xFF1E1E1E);
-  static const Color darkInput    = Color(0xFF2A2A2A);
-
-  static const Color darkTextPrimary   = Colors.white;
-  static const Color darkTextSecondary = Color(0xFFBCAFB3);
-  static const Color darkTextHint      = Color(0xFF8A7F83);
+  // Text Colors (High Contrast)
+  static const Color textPrimary   = Color(0xFF101426); // Near Black Navy
+  static const Color textSecondary = Color(0xFF535A7D); // Muted Blue-Grey
+  static const Color textHint      = Color(0xFF9BA3C1); // Subtle Hint
 
   // ═════════════════════════════════════════════════════════════
-  // 🌈 BRAND GRADIENTS (Aligned with Logo)
+  // 🌈 PROFESSIONAL GRADIENTS (Blue to Purple)
   // ═════════════════════════════════════════════════════════════
 
   // Main Brand Gradient (Navigation + Splash Text)
+  // This looks very high-end (Indigo to Royal Blue)
   static const LinearGradient navGradient = LinearGradient(
-    colors: [lightCoral, sweetPeony],
+    colors: [royalBlue, violet],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
   );
 
   // Premium Button Gradient
   static const LinearGradient buttonGradient = LinearGradient(
-    colors: [lightCoral, sweetPeony],
+    colors: [royalBlue, violet],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  // Accent Gradient (Logo Inspired - Sage to Coral)
+  // Accent Gradient (Sky to Indigo)
   static const LinearGradient accentGradient = LinearGradient(
-    colors: [sage, lightCoral],
+    colors: [Color(0xFF42A5F5), indigo],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  // Text Gradient
+  // Text Gradient (For Titles)
   static const LinearGradient textGradient = LinearGradient(
-    colors: [sweetPeony, lightCoral],
+    colors: [royalBlue, Color(0xFF9C27B0)], // Blue to Deep Magenta/Purple
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -74,23 +65,23 @@ class AppColors {
   // 🎯 STATUS & ACCENTS
   // ═════════════════════════════════════════════════════════════
 
-  static const Color accent  = lightCoral;
-  static const Color success = Color(0xFF7CB97E);
-  static const Color error   = Color(0xFFE07070);
-  static const Color border  = powderBlush;
+  static const Color accent  = royalBlue;
+  static const Color success = Color(0xFF4CAF50); // Clean Green
+  static const Color error   = Color(0xFFD32F2F); // Alert Red
+  static const Color border  = Color(0xFFDDE1F0); // Subtle Blueish Border
 
   // ═════════════════════════════════════════════════════════════
-  // 🏷️ CATEGORY COLORS (Balanced with Logo Palette)
+  // 🏷️ CATEGORY COLORS (Variations of Blue and Purple)
   // ═════════════════════════════════════════════════════════════
 
   static const List<Color> categoryColors = [
-    lightCoral,
-    sweetPeony,
-    sage,
-    powderBlush,
-    smokyRose,
-    Color(0xFFD8A6A6), // Soft Dusty Rose
-    Color(0xFFB8D1C3), // Light Sage Tint
+    royalBlue,
+    violet,
+    Color(0xFF0288D1), // Sky Blue
+    indigo,
+    Color(0xFFD32F2F), // High Contrast Pink-Red
+    Color(0xFF7B1FA2), // Deep Purple
+    Color(0xFF0097A7), // Teal Blue
   ];
 
   static Color getRandomCategoryColor(int index) {

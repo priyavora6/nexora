@@ -112,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Transform.scale(
                       scale: _orbPulseAnim.value,
                       child: _buildBlurOrb(
-                          AppColors.sage.withOpacity(0.25)),
+                          AppColors.lavender.withOpacity(0.25)),
                     ),
                   ),
                   Positioned(
@@ -121,7 +121,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Transform.scale(
                       scale: _orbPulseAnim.value * 1.1,
                       child: _buildBlurOrb(
-                          AppColors.lightCoral.withOpacity(0.25)),
+                          AppColors.royalBlue.withOpacity(0.25)),
                     ),
                   ),
                 ],
@@ -149,7 +149,7 @@ class _SplashScreenState extends State<SplashScreen>
                           boxShadow: [
                             BoxShadow(
                               color:
-                              AppColors.lightCoral.withOpacity(0.25),
+                              AppColors.royalBlue.withOpacity(0.25),
                               blurRadius: 40,
                               offset: const Offset(0, 15),
                             ),
@@ -157,7 +157,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         child: ClipOval(
                           child: Image.asset(
-                            'assets/icon.jpeg',
+                            'assets/icon.jpg',
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -202,9 +202,9 @@ class _SplashScreenState extends State<SplashScreen>
                       height: 45,
                       child: CircularProgressIndicator(
                         strokeWidth: 1,
-                        color: AppColors.sweetPeony,
+                        color: AppColors.violet,
                         backgroundColor:
-                        AppColors.sage.withOpacity(0.1),
+                        AppColors.lavender.withOpacity(0.1),
                       ),
                     ),
                   ],

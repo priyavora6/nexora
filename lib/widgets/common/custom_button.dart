@@ -4,7 +4,7 @@ import '../../config/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isLoading;
   final bool isOutlined;
   final IconData? icon;
@@ -13,7 +13,7 @@ class CustomButton extends StatelessWidget {
   const CustomButton({
     Key? key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.isLoading = false,
     this.isOutlined = false,
     this.icon,
@@ -22,24 +22,26 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDisabled = onPressed == null || isLoading;
+
     return GestureDetector(
-      onTap: isLoading ? null : onPressed,
+      onTap: isDisabled ? null : onPressed,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         width: width ?? double.infinity,
         height: 56,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30), // ✅ Perfect pill shape
-          // ✅ Matches Top & Bottom Nav Gradient
-          gradient: isOutlined ? null : AppColors.navGradient,
+          borderRadius: BorderRadius.circular(30),
+          gradient: (isOutlined || onPressed == null) ? null : AppColors.navGradient,
+          color: onPressed == null ? Colors.grey[300] : (isOutlined ? Colors.transparent : null),
           border: isOutlined
-              ? Border.all(color: AppColors.lightCoral, width: 2)
+              ? Border.all(color: onPressed == null ? Colors.grey[400]! : AppColors.royalBlue, width: 2)
               : null,
-          boxShadow: isOutlined
+          boxShadow: (isOutlined || onPressed == null)
               ? []
               : [
             BoxShadow(
-              color: AppColors.lightCoral.withOpacity(0.3),
+              color: AppColors.royalBlue.withOpacity(0.3),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -62,10 +64,12 @@ class CustomButton extends StatelessWidget {
               Flexible(
                 child: Text(
                   text,
-                  style: GoogleFonts.raleway( // ✅ Modern clean font for buttons
+                  style: GoogleFonts.raleway(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
-                    color: isOutlined ? AppColors.lightCoral : Colors.white,
+                    color: isOutlined 
+                        ? (onPressed == null ? Colors.grey[400] : AppColors.royalBlue) 
+                        : (onPressed == null ? Colors.grey[600] : Colors.white),
                     letterSpacing: 1.2,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -76,7 +80,9 @@ class CustomButton extends StatelessWidget {
                 const SizedBox(width: 10),
                 Icon(
                   icon,
-                  color: isOutlined ? AppColors.lightCoral : Colors.white,
+                  color: isOutlined 
+                      ? (onPressed == null ? Colors.grey[400] : AppColors.royalBlue) 
+                      : (onPressed == null ? Colors.grey[600] : Colors.white),
                   size: 18,
                 ),
               ],

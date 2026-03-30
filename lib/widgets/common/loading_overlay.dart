@@ -25,7 +25,7 @@ class LoadingOverlay extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CircularProgressIndicator(
-                    color: AppColors.lightCoral, // Theme primary color
+                    color: AppColors.royalBlue, // Theme primary color
                     strokeWidth: 3,
                   ),
                   SizedBox(height: 16),

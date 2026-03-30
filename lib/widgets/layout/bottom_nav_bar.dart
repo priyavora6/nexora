@@ -12,7 +12,7 @@ class BottomNavBar extends StatelessWidget {
     AppRoutes.categories,
     AppRoutes.search,
     AppRoutes.favorites,
-    AppRoutes.profile,
+    AppRoutes.settings,
   ];
 
   @override
@@ -30,7 +30,7 @@ class BottomNavBar extends StatelessWidget {
             _buildItem(context, 1, Icons.grid_view_rounded, "browse"),
             _buildItem(context, 2, Icons.search_rounded, "search"),
             _buildItem(context, 3, Icons.bookmark_rounded, "saved"),
-            _buildItem(context, 4, Icons.person_rounded, "profile"),
+            _buildItem(context, 4, Icons.settings_rounded, "settings"),
           ],
         ),
       ),

@@ -1,3 +1,4 @@
+// lib/screens/auth/signup_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import '../../utils/validators.dart';
 import '../../widgets/common/gradient_text.dart';
 import '../../widgets/common/custom_button.dart';
 import '../../widgets/common/custom_textfield.dart';
+import '../../services/emailjs_service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -25,6 +27,7 @@ class _SignupScreenState extends State<SignupScreen>
   final _passCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
   bool _agreedToTerms = false;
+  bool _isSendingOTP = false;
 
   late AnimationController _animCtrl;
   late Animation<double> _fadeAnim;
@@ -69,43 +72,54 @@ class _SignupScreenState extends State<SignupScreen>
     super.dispose();
   }
 
+  // ─── SHOW ERROR SNACKBAR ───
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.error,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  // ─── SEND OTP & NAVIGATE TO OTP SCREEN ───
   Future<void> _signup() async {
     if (!_formKey.currentState!.validate()) return;
 
     if (!_agreedToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please agree to Terms & Conditions'),
-          backgroundColor: AppColors.textPrimary,
-        ),
-      );
+      _showErrorSnackBar('Please agree to Terms & Conditions');
       return;
     }
 
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    final success = await auth.signUp(
-      name: _nameCtrl.text.trim(),
-      email: _emailCtrl.text.trim(),
-      password: _passCtrl.text.trim(),
+    setState(() => _isSendingOTP = true);
+
+    // 1. EmailJS se OTP bhejo
+    final result = await EmailJSService.sendOTP(
+      userEmail: _emailCtrl.text.trim(),
     );
+
+    setState(() => _isSendingOTP = false);
 
     if (!mounted) return;
 
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created successfully!'),
-          backgroundColor: AppColors.success,
-        ),
+    if (result['success'] == true) {
+      // 2. ✅ Agar success hai, toh OTP screen par jao saara data lekar
+      Navigator.pushNamed(
+        context,
+        AppRoutes.otpVerify,
+        arguments: {
+          'name': _nameCtrl.text.trim(),
+          'email': _emailCtrl.text.trim(),
+          'password': _passCtrl.text.trim(),
+          'otp': result['otp'], // EmailJS wala OTP
+          'expiryTime': result['expiryTime'],
+        },
       );
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(auth.error ?? 'Signup failed'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      // 3. ❌ Agar error aaya, toh error dikhao
+      _showErrorSnackBar("Email Error: ${result['error']}");
     }
   }
 
@@ -118,14 +132,13 @@ class _SignupScreenState extends State<SignupScreen>
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.75,
         padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Handle Bar
             Center(
               child: Container(
                 width: 40,
@@ -136,33 +149,25 @@ class _SignupScreenState extends State<SignupScreen>
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // Title
             Text(
               'Terms & Conditions',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.inter(
                 fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w800,
+                color: Theme.of(context).textTheme.titleLarge?.color,
               ),
             ),
-
             const SizedBox(height: 8),
-
             Text(
               'Last Updated: January 2025',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppColors.lightCoral,
+                color: AppColors.royalBlue,
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // Content
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -189,19 +194,16 @@ class _SignupScreenState extends State<SignupScreen>
                       'We reserve the right to modify these terms at any time. Continued use of the app after changes constitutes acceptance of the new terms.\n\n'
                       '11. Contact\n'
                       'If you have any questions about these Terms & Conditions, please contact us at support@nexora.com.',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.inter(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                     height: 1.7,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // Accept Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -210,7 +212,7 @@ class _SignupScreenState extends State<SignupScreen>
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.lightCoral,
+                  backgroundColor: AppColors.royalBlue,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -219,8 +221,8 @@ class _SignupScreenState extends State<SignupScreen>
                 ),
                 child: Text(
                   'I AGREE TO THE TERMS',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w700,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w800,
                     color: Colors.white,
                     letterSpacing: 1,
                   ),
@@ -235,10 +237,10 @@ class _SignupScreenState extends State<SignupScreen>
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -265,9 +267,9 @@ class _SignupScreenState extends State<SignupScreen>
                             color: AppColors.border.withOpacity(0.5),
                           ),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.arrow_back_rounded,
-                          color: AppColors.textPrimary,
+                          color: theme.textTheme.bodyLarge?.color,
                           size: 22,
                         ),
                       ),
@@ -290,7 +292,7 @@ class _SignupScreenState extends State<SignupScreen>
                           gradient: AppColors.buttonGradient,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.lightCoral.withOpacity(0.3),
+                              color: AppColors.royalBlue.withOpacity(0.3),
                               blurRadius: 20,
                               spreadRadius: 2,
                             ),
@@ -302,27 +304,24 @@ class _SignupScreenState extends State<SignupScreen>
                           size: 28,
                         ),
                       ),
-
                       const SizedBox(height: 20),
-
                       GradientText(
                         text: 'Create Account',
-                        style: GoogleFonts.poppins(
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
+                        ) ?? GoogleFonts.inter(
                           fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
                         ),
                         gradient: AppColors.textGradient,
                       ),
-
                       const SizedBox(height: 8),
-
                       Text(
                         'Join our community of AI creators',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: AppColors.textSecondary,
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -344,9 +343,7 @@ class _SignupScreenState extends State<SignupScreen>
                           controller: _nameCtrl,
                           validator: Validators.name,
                         ),
-
                         const SizedBox(height: 16),
-
                         CustomTextField(
                           hint: 'Email Address',
                           prefixIcon: Icons.email_outlined,
@@ -354,9 +351,7 @@ class _SignupScreenState extends State<SignupScreen>
                           keyboardType: TextInputType.emailAddress,
                           validator: Validators.email,
                         ),
-
                         const SizedBox(height: 16),
-
                         CustomTextField(
                           hint: 'Password',
                           prefixIcon: Icons.lock_outline_rounded,
@@ -364,9 +359,7 @@ class _SignupScreenState extends State<SignupScreen>
                           controller: _passCtrl,
                           validator: Validators.password,
                         ),
-
                         const SizedBox(height: 16),
-
                         CustomTextField(
                           hint: 'Confirm Password',
                           prefixIcon: Icons.shield_outlined,
@@ -375,16 +368,14 @@ class _SignupScreenState extends State<SignupScreen>
                           validator: (v) =>
                               Validators.confirmPassword(v, _passCtrl.text),
                         ),
-
                         const SizedBox(height: 20),
 
-                        // ─── Terms Checkbox (CLICKABLE) ───
+                        // ─── Terms Checkbox ───
                         Row(
                           children: [
                             GestureDetector(
                               onTap: () => setState(
-                                    () => _agreedToTerms = !_agreedToTerms,
-                              ),
+                                      () => _agreedToTerms = !_agreedToTerms),
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
                                 width: 22,
@@ -393,30 +384,27 @@ class _SignupScreenState extends State<SignupScreen>
                                   borderRadius: BorderRadius.circular(6),
                                   border: Border.all(
                                     color: _agreedToTerms
-                                        ? AppColors.lightCoral
+                                        ? AppColors.royalBlue
                                         : AppColors.border,
                                     width: 2,
                                   ),
                                   color: _agreedToTerms
-                                      ? AppColors.lightCoral
+                                      ? AppColors.royalBlue
                                       : Colors.transparent,
                                 ),
                                 child: _agreedToTerms
-                                    ? const Icon(
-                                  Icons.check_rounded,
-                                  size: 16,
-                                  color: Colors.white,
-                                )
+                                    ? const Icon(Icons.check_rounded,
+                                    size: 16, color: Colors.white)
                                     : null,
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: GestureDetector(
-                                onTap: () => _showTermsAndConditions(), // ✅ OPENS T&C
+                                onTap: () => _showTermsAndConditions(),
                                 child: RichText(
                                   text: TextSpan(
-                                    style: GoogleFonts.poppins(
+                                    style: theme.textTheme.bodyMedium?.copyWith(
                                       fontSize: 12,
                                       color: AppColors.textSecondary,
                                     ),
@@ -424,12 +412,13 @@ class _SignupScreenState extends State<SignupScreen>
                                       const TextSpan(text: 'I agree to the '),
                                       TextSpan(
                                         text: 'Terms & Conditions',
-                                        style: GoogleFonts.poppins(
+                                        style: GoogleFonts.inter(
                                           fontSize: 12,
-                                          color: AppColors.lightCoral,
-                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.royalBlue,
+                                          fontWeight: FontWeight.w800,
                                           decoration: TextDecoration.underline,
-                                          decorationColor: AppColors.lightCoral,
+                                          decorationColor:
+                                          AppColors.royalBlue,
                                         ),
                                       ),
                                     ],
@@ -442,11 +431,11 @@ class _SignupScreenState extends State<SignupScreen>
 
                         const SizedBox(height: 32),
 
-                        // ─── Signup Button ───
+                        // ─── SEND OTP Button ───
                         CustomButton(
-                          text: 'CREATE ACCOUNT',
-                          icon: Icons.arrow_forward_rounded,
-                          isLoading: auth.isLoading,
+                          text: _isSendingOTP ? 'SENDING OTP...' : 'VERIFY EMAIL',
+                          icon: Icons.email_outlined,
+                          isLoading: _isSendingOTP,
                           onPressed: _signup,
                         ),
 
@@ -458,20 +447,18 @@ class _SignupScreenState extends State<SignupScreen>
                           children: [
                             Text(
                               'Already have an account? ',
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
+                              style: theme.textTheme.bodyMedium?.copyWith(
                                 color: AppColors.textSecondary,
-                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             GestureDetector(
                               onTap: () => Navigator.pop(context),
                               child: Text(
                                 'Login',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.inter(
                                   fontSize: 14,
-                                  color: AppColors.lightCoral,
-                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.royalBlue,
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
                             ),

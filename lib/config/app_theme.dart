@@ -6,144 +6,106 @@ import 'app_colors.dart';
 class AppTheme {
   AppTheme._();
 
+  // ═══════════════════════════════════════════════════════════
+  // ☀️ APP THEME (Professional Light Mode)
+  // ═══════════════════════════════════════════════════════════
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: AppColors.lightScaffold, // ✅ Pure White
+      scaffoldBackgroundColor: AppColors.lightScaffold,
+      cardColor: AppColors.lightCard,
 
-      // ─── COLOR SCHEME ───
-      colorScheme: ColorScheme.light(
-        primary: AppColors.lightCoral,
-        secondary: AppColors.sweetPeony,
+      // Aligned with Blue & Purple Palette
+      colorScheme: const ColorScheme.light(
+        primary: AppColors.royalBlue,   // Main color is now Deep Blue
+        secondary: AppColors.violet,   // Accent color is now Purple
         surface: AppColors.lightCard,
         onSurface: AppColors.textPrimary,
         error: AppColors.error,
         outline: AppColors.border,
       ),
 
-      // ─── APP BAR THEME ───
-      // (Used as fallback for GradientAppBar text style)
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        systemOverlayStyle: SystemUiOverlayStyle.light, // White icons for gradient bars
-        titleTextStyle: GoogleFonts.playfairDisplay(
+        // System status bar icons will be dark for light theme
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        titleTextStyle: GoogleFonts.inter(
           fontSize: 20,
-          fontWeight: FontWeight.w900,
-          color: Colors.white,
-          letterSpacing: 1.5,
+          fontWeight: FontWeight.w800,
+          color: AppColors.textPrimary, // Changed from white to Navy for Light Theme
+          letterSpacing: -0.5,
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
 
-      // ─── CUSTOM TEXT THEME ───
-      // Pairs elegant Serif for headlines and clean Sans for body
-      textTheme: TextTheme(
-        displayLarge: GoogleFonts.playfairDisplay(
+      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme).copyWith(
+        displayLarge: const TextStyle(
           fontSize: 32,
-          fontWeight: FontWeight.w900,
-          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w800,
+          color: AppColors.textPrimary, // Professional Navy
+          letterSpacing: -1,
         ),
-        headlineMedium: GoogleFonts.playfairDisplay(
+        headlineMedium: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
+          letterSpacing: -0.5,
         ),
-        titleLarge: GoogleFonts.playfairDisplay(
+        titleLarge: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
-        bodyLarge: GoogleFonts.raleway(
+        bodyLarge: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
           height: 1.5,
         ),
-        bodyMedium: GoogleFonts.raleway(
+        bodyMedium: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: AppColors.textSecondary,
-        ),
-        labelLarge: GoogleFonts.raleway(
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.2,
-          color: AppColors.textPrimary,
+          color: AppColors.textSecondary, // Blue-Grey Muted Text
         ),
       ),
 
-      // ─── BUTTON THEME ───
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.lightCoral,
+          backgroundColor: AppColors.royalBlue, // Clean Blue Button
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 15),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          textStyle: GoogleFonts.raleway(
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700),
         ),
       ),
 
-      // ─── INPUT DECORATION (SEARCH/FORMS) ───
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.lightInput, // ✅ Soft off-white
+        fillColor: AppColors.lightInput, // Faint Blue Background
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: AppColors.border.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: AppColors.lightCoral, width: 1.5),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.royalBlue, width: 1.5),
         ),
-        hintStyle: GoogleFonts.raleway(
-          fontSize: 14,
-          color: AppColors.textHint,
-          fontWeight: FontWeight.w500,
-        ),
+        hintStyle: const TextStyle(color: AppColors.textHint),
       ),
 
-      // ─── CARD THEME ───
-      cardTheme: CardThemeData(
-        color: AppColors.lightCard,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: AppColors.border.withOpacity(0.4)),
-        ),
-      ),
-
-      // ─── BOTTOM NAV BAR THEME ───
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.transparent, // Handled by Gradient wrapper
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white60,
-        showUnselectedLabels: false,
-        elevation: 0,
-      ),
-
-      // ─── CHIP THEME ───
-      chipTheme: ChipThemeData(
-        backgroundColor: Colors.white,
-        selectedColor: AppColors.lightCoral,
-        labelStyle: GoogleFonts.raleway(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        side: BorderSide(color: AppColors.border.withOpacity(0.5)),
+      // Divider Theme for consistent thin lines
+      dividerTheme: DividerThemeData(
+        color: AppColors.border.withOpacity(0.5),
+        thickness: 1,
       ),
     );
   }

@@ -27,7 +27,6 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
   bool _saving = false;
   bool get _isEdit => widget.category != null;
 
-  // ✅ Subcategory controllers
   final List<Map<String, TextEditingController>> _subControllers = [];
 
   @override
@@ -40,11 +39,10 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
       _loadSubcategories();
     } else {
       _iconCtrl.text = '📁';
-      _colorCtrl.text = '#FF6B9D';
+      _colorCtrl.text = '#3949AB'; // Default changed to Royal Blue
     }
   }
 
-  // ✅ Load existing subcategories for editing
   Future<void> _loadSubcategories() async {
     if (!_isEdit) return;
     final fs = FirestoreService();
@@ -59,7 +57,6 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
     }
   }
 
-  // ✅ Add new subcategory field
   void _addSubcategoryField() {
     setState(() {
       _subControllers.add({
@@ -69,7 +66,6 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
     });
   }
 
-  // ✅ Remove subcategory field
   void _removeSubcategoryField(int index) {
     setState(() {
       _subControllers[index]['name']!.dispose();
@@ -90,7 +86,6 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
     super.dispose();
   }
 
-  // ✅ Save category + subcategories
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
@@ -99,14 +94,12 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
       final fs = FirestoreService();
 
       if (_isEdit) {
-        // Update category
         await fs.updateCategory(widget.category!.id, {
           'name': _nameCtrl.text.trim(),
           'icon': _iconCtrl.text.trim(),
           'color': _colorCtrl.text.trim(),
         });
 
-        // Update subcategories
         await fs.deleteAllSubcategories(widget.category!.id);
         for (int i = 0; i < _subControllers.length; i++) {
           final name = _subControllers[i]['name']!.text.trim();
@@ -121,7 +114,6 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
           }
         }
       } else {
-        // Create new category
         final catId = await fs.addCategoryAndGetId({
           'name': _nameCtrl.text.trim(),
           'icon': _iconCtrl.text.trim(),
@@ -130,7 +122,6 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
           'promptCount': 0,
         });
 
-        // Add subcategories
         for (int i = 0; i < _subControllers.length; i++) {
           final name = _subControllers[i]['name']!.text.trim();
           final icon = _subControllers[i]['icon']!.text.trim();
@@ -148,9 +139,7 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              _isEdit ? 'Category updated!' : 'Category added!',
-            ),
+            content: Text(_isEdit ? 'Category updated!' : 'Category added!'),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
           ),
@@ -177,10 +166,10 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
     final previewColor = Helpers.hexToColor(_colorCtrl.text);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.lightScaffold,
 
       appBar: GradientAppBar(
-        title: _isEdit ? 'Edit Category' : 'Add Category',
+        title: _isEdit ? 'EDIT CATEGORY' : 'ADD CATEGORY',
         showBack: true,
       ),
 
@@ -197,10 +186,10 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    color: previewColor.withOpacity(0.1),
+                    color: previewColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: previewColor.withOpacity(0.3),
+                      color: previewColor.withOpacity(0.2),
                       width: 2,
                     ),
                   ),
@@ -213,11 +202,12 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Preview',
-                        style: GoogleFonts.raleway(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                        'PREVIEW',
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
                           color: AppColors.textHint,
+                          letterSpacing: 1,
                         ),
                       ),
                     ],
@@ -230,7 +220,7 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
               // ─── CATEGORY DETAILS SECTION ───
               Text(
                 'Category Details',
-                style: GoogleFonts.playfairDisplay(
+                style: GoogleFonts.inter(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
@@ -240,7 +230,7 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
               const SizedBox(height: 16),
 
               CustomTextField(
-                hint: 'Category Name',
+                hint: 'e.g. Portrait Photography',
                 label: 'Name',
                 prefixIcon: Icons.label_outline,
                 controller: _nameCtrl,
@@ -251,7 +241,6 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
 
               Row(
                 children: [
-                  // Icon Field
                   Expanded(
                     child: CustomTextField(
                       hint: 'e.g. 📸',
@@ -263,10 +252,9 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // Color Field
                   Expanded(
                     child: CustomTextField(
-                      hint: 'e.g. #FF6B9D',
+                      hint: 'e.g. #3949AB',
                       label: 'Color Hex',
                       prefixIcon: Icons.color_lens_outlined,
                       controller: _colorCtrl,
@@ -277,26 +265,25 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
                 ],
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
-              // ─── COLOR PRESETS ───
               Text(
-                'Quick Colors',
-                style: GoogleFonts.raleway(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                'QUICK COLORS',
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
                   color: AppColors.textHint,
+                  letterSpacing: 1,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Wrap(
-                spacing: 10,
-                runSpacing: 10,
+                spacing: 12,
+                runSpacing: 12,
                 children: [
-                  '#FF6B9D', '#4A90D9', '#FF85C2', '#FF9F43',
-                  '#A55EEA', '#E74C3C', '#26de81', '#FD9644',
-                  '#F7B731', '#FC5C65', '#2D98DA', '#45AAF2',
-                  '#4B7BEC', '#20BF6B', '#FED330', '#FF6348',
+                  '#1A237E', '#3949AB', '#5C6BC0', '#7E57C2', // Dark Blues / Purples
+                  '#9575CD', '#42A5F5', '#0288D1', '#0097A7', // Light Blues / Teals
+                  '#7B1FA2', '#455A64', '#1E88E5', '#673AB7', // Mix Professional
                 ].map((hex) {
                   final c = Helpers.hexToColor(hex);
                   final isSelected = _colorCtrl.text.toUpperCase() == hex.toUpperCase();
@@ -305,8 +292,8 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
                       setState(() => _colorCtrl.text = hex);
                     },
                     child: Container(
-                      width: 36,
-                      height: 36,
+                      width: 38,
+                      height: 38,
                       decoration: BoxDecoration(
                         color: c,
                         shape: BoxShape.circle,
@@ -317,14 +304,14 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
                         boxShadow: [
                           if (isSelected)
                             BoxShadow(
-                              color: c.withOpacity(0.6),
-                              blurRadius: 8,
+                              color: c.withOpacity(0.4),
+                              blurRadius: 10,
                               spreadRadius: 2,
                             ),
                         ],
                       ),
                       child: isSelected
-                          ? const Icon(Icons.check_rounded, color: Colors.white, size: 18)
+                          ? const Icon(Icons.check_rounded, color: Colors.white, size: 20)
                           : null,
                     ),
                   );
@@ -339,7 +326,7 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
                 children: [
                   Text(
                     'Subcategories',
-                    style: GoogleFonts.playfairDisplay(
+                    style: GoogleFonts.inter(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
@@ -350,14 +337,15 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
                     icon: const Icon(
                       Icons.add_circle_rounded,
                       size: 20,
-                      color: AppColors.lightCoral,
+                      color: AppColors.royalBlue, // Updated to Blue
                     ),
                     label: Text(
-                      'Add',
-                      style: GoogleFonts.raleway(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.lightCoral,
+                      'ADD NEW',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.royalBlue,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),
@@ -369,167 +357,92 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
               if (_subControllers.isEmpty)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
                     color: AppColors.lightInput,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColors.border.withOpacity(0.3),
-                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.border.withOpacity(0.5)),
                   ),
                   child: Column(
                     children: [
                       Icon(
                         Icons.subdirectory_arrow_right_rounded,
-                        size: 32,
-                        color: AppColors.sage.withOpacity(0.5),
+                        size: 40,
+                        color: AppColors.indigo.withOpacity(0.3),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Text(
                         'No subcategories added',
-                        style: GoogleFonts.raleway(
-                          fontSize: 13,
-                          color: AppColors.textHint,
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
                           fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Tap "Add" to create subcategories',
-                        style: GoogleFonts.raleway(
-                          fontSize: 11,
-                          color: AppColors.textHint,
                         ),
                       ),
                     ],
                   ),
                 ),
 
-              // ─── SUBCATEGORY FIELDS ───
               ...List.generate(_subControllers.length, (i) {
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColors.border.withOpacity(0.4),
-                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.border),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        color: AppColors.royalBlue.withOpacity(0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: Column(
                     children: [
-                      // Header with number and delete
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: previewColor.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              'Sub ${i + 1}',
-                              style: GoogleFonts.raleway(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
+                              'SUB ${i + 1}',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
                                 color: previewColor,
                               ),
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () => _removeSubcategoryField(i),
-                            child: Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                color: AppColors.error.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.close_rounded,
-                                size: 18,
-                                color: AppColors.error,
-                              ),
-                            ),
+                          IconButton(
+                            onPressed: () => _removeSubcategoryField(i),
+                            icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 22),
                           ),
                         ],
                       ),
-
-                      const SizedBox(height: 12),
-
-                      // Name and Icon Fields
+                      const SizedBox(height: 16),
                       Row(
                         children: [
-                          // Subcategory Name
                           Expanded(
                             flex: 3,
-                            child: TextFormField(
+                            child: CustomTextField(
+                              hint: 'Name',
                               controller: _subControllers[i]['name'],
-                              style: GoogleFonts.raleway(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'Subcategory name',
-                                hintStyle: GoogleFonts.raleway(
-                                  color: AppColors.textHint,
-                                  fontSize: 13,
-                                ),
-                                filled: true,
-                                fillColor: AppColors.lightInput,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                              ),
-                              validator: (v) {
-                                if (v == null || v.trim().isEmpty) {
-                                  return 'Required';
-                                }
-                                return null;
-                              },
+                              validator: (v) => Validators.required(v, 'Name'),
                             ),
                           ),
-
                           const SizedBox(width: 12),
-
-                          // Subcategory Icon
                           Expanded(
                             flex: 1,
-                            child: TextFormField(
+                            child: CustomTextField(
+                              hint: '📌',
                               controller: _subControllers[i]['icon'],
                               textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 20),
-                              decoration: InputDecoration(
-                                hintText: '📌',
-                                filled: true,
-                                fillColor: AppColors.lightInput,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 12,
-                                ),
-                              ),
                             ),
                           ),
                         ],
@@ -541,15 +454,14 @@ class _AddEditCategoryScreenState extends State<AddEditCategoryScreen> {
 
               const SizedBox(height: 40),
 
-              // ─── SAVE BUTTON ───
               CustomButton(
-                text: _isEdit ? 'UPDATE CATEGORY' : 'ADD CATEGORY',
-                icon: Icons.save_rounded,
+                text: _isEdit ? 'UPDATE CATEGORY' : 'SAVE CATEGORY',
+                icon: Icons.check_circle_outline_rounded,
                 isLoading: _saving,
                 onPressed: _save,
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 40),
             ],
           ),
         ),

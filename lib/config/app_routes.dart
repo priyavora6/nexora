@@ -3,6 +3,9 @@ import '../screens/splash/splash_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/signup_screen.dart';
+import '../screens/auth/otp_verification_screen.dart';
+import '../screens/auth/forgot_password_screen.dart';
+import '../screens/auth/interests_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/categories/categories_screen.dart';
 import '../screens/categories/category_detail_screen.dart';
@@ -10,12 +13,14 @@ import '../screens/categories/subcategory.dart';
 import '../screens/prompts/prompt_detail_screen.dart';
 import '../screens/search/search_screen.dart';
 import '../screens/favorites/favorites_screen.dart';
-import '../screens/profile/profile_screen.dart';
-import '../screens/profile/feedback_screen.dart';
-import '../screens/profile/contact_us_screen.dart';
-import '../screens/profile/privacy_policy_screen.dart';
-import '../screens/profile/about_app_screen.dart';
-import '../screens/profile/developer_info_screen.dart';
+import '../screens/settings/settings_screen.dart';
+import '../screens/settings/feedback_screen.dart';
+import '../screens/settings/contact_us_screen.dart';
+import '../screens/settings/privacy_policy_screen.dart';
+import '../screens/settings/about_app_screen.dart';
+import '../screens/settings/developer_info_screen.dart';
+import '../screens/settings/change_password_screen.dart';
+import '../screens/settings/how_to_use_screen.dart';
 import '../widgets/common/webview_screen.dart';
 
 import '../screens/admin/admin_dashboard_screen.dart';
@@ -27,48 +32,41 @@ import '../screens/admin/add_edit_prompt_screen.dart';
 class AppRoutes {
   AppRoutes._();
 
-  // ═══════════════════════════════
-  // Route names
-  // ═══════════════════════════════
   static const String splash           = '/';
   static const String onboarding       = '/onboarding';
   static const String login            = '/login';
   static const String signup           = '/signup';
+  static const String otpVerify        = '/otp-verify';
+  static const String forgotPassword   = '/forgot-password';
+  static const String interests        = '/interests';
 
-  // Main screens (each has bottom nav)
   static const String home             = '/home';
   static const String categories       = '/categories';
   static const String search           = '/search';
   static const String favorites        = '/favorites';
-  static const String profile          = '/profile';
+  static const String settings         = '/settings';
 
-  // Detail screens
   static const String categoryDetail   = '/category-detail';
   static const String subcategoryDetail = '/subcategory-detail';
   static const String promptDetail     = '/prompt-detail';
   static const String webView          = '/webview';
 
-  // Profile Sub-pages
   static const String feedback         = '/feedback';
   static const String contactUs        = '/contact-us';
   static const String privacyPolicy    = '/privacy-policy';
   static const String aboutApp         = '/about-app';
   static const String developerInfo    = '/developer-info';
+  static const String changePassword   = '/change-password';
+  static const String howToUse         = '/how-to-use';
 
-  // Admin screens
-  static const String adminLogin       = '/admin-login';
   static const String adminDash        = '/admin-dashboard';
   static const String manageCategories = '/manage-categories';
   static const String managePrompts    = '/manage-prompts';
   static const String addEditCategory  = '/add-edit-category';
   static const String addEditPrompt    = '/add-edit-prompt';
 
-  // ═══════════════════════════════
-  // Route generator
-  // ═══════════════════════════════
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-    // ── Auth flow ──
       case splash:
         return _fade(SplashScreen());
       case onboarding:
@@ -77,8 +75,22 @@ class AppRoutes {
         return _fade(LoginScreen());
       case signup:
         return _slide(SignupScreen());
+      case otpVerify:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => OTPVerificationScreen(
+            name: args['name'],
+            email: args['email'],
+            password: args['password'],
+            otp: args['otp'],
+            expiryTime: args['expiryTime'],
+          ),
+        );
+      case forgotPassword:
+        return _slide(const ForgotPasswordScreen());
+      case interests:
+        return MaterialPageRoute(builder: (_) => const InterestsSelectionScreen());
 
-    // ── Main screens (bottom nav — NO animation for tab switches) ──
       case home:
         return _noAnimation(HomeScreen());
       case categories:
@@ -87,10 +99,9 @@ class AppRoutes {
         return _noAnimation(SearchScreen());
       case favorites:
         return _noAnimation(FavoritesScreen());
-      case profile:
-        return _noAnimation(ProfileScreen());
+      case AppRoutes.settings:
+        return _noAnimation(const SettingsScreen());
 
-    // ── Detail screens ──
       case categoryDetail:
         final args = settings.arguments as Map<String, dynamic>;
         return _slide(CategoryDetailScreen(
@@ -118,7 +129,6 @@ class AppRoutes {
           title: args['title'],
         ));
 
-    // ── Profile Sub-pages ──
       case feedback:
         return _slide(const FeedbackScreen());
       case contactUs:
@@ -129,8 +139,10 @@ class AppRoutes {
         return _slide(const AboutAppScreen());
       case developerInfo:
         return _slide(const DeveloperInfoScreen());
-
-    // ── Admin screens ──
+      case changePassword:
+        return _slide(const ChangePasswordScreen());
+      case howToUse:
+        return _slide(const HowToUseScreen());
 
       case adminDash:
         return _fade(AdminDashboardScreen());
@@ -150,7 +162,6 @@ class AppRoutes {
     }
   }
 
-  // ── No animation (for bottom nav tab switching) ──
   static PageRouteBuilder _noAnimation(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (_, __, ___) => page,
@@ -159,7 +170,6 @@ class AppRoutes {
     );
   }
 
-  // ── Fade transition ──
   static PageRouteBuilder _fade(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (_, __, ___) => page,
@@ -169,7 +179,6 @@ class AppRoutes {
     );
   }
 
-  // ── Slide transition ──
   static PageRouteBuilder _slide(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (_, __, ___) => page,

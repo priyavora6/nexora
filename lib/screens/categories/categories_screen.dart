@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/app_colors.dart';
@@ -9,7 +8,6 @@ import '../../providers/prompt_provider.dart';
 import '../../widgets/layout/bottom_nav_bar.dart';
 import '../../widgets/layout/gradient_app_bar.dart';
 import '../../utils/helpers.dart';
-import '../../widgets/common/particles_background.dart';
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({Key? key}) : super(key: key);
@@ -25,6 +23,7 @@ class CategoriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final prov = Provider.of<PromptProvider>(context);
+    final theme = Theme.of(context);
 
     return PopScope(
       canPop: false,
@@ -33,81 +32,62 @@ class CategoriesScreen extends StatelessWidget {
         _goToHome(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
 
         appBar: GradientAppBar(
-          title: 'Categories',
+          title: 'CATEGORIES',
           showBack: true,
           onBackPressed: () => _goToHome(context),
         ),
 
         bottomNavigationBar: const BottomNavBar(currentIndex: 1),
 
-        body: Stack(
-          children: [
-            const ParticlesBackground(count: 20),
+        body: StreamBuilder<List<CategoryModel>>(
+          stream: prov.categoriesStream,
+          builder: (context, snap) {
+            if (!snap.hasData) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.royalBlue),
+              );
+            }
 
-            StreamBuilder<List<CategoryModel>>(
-              stream: prov.categoriesStream,
-              builder: (context, snap) {
-                if (!snap.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: AppColors.lightCoral),
-                  );
-                }
-
-                if (snap.data!.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.folder_open_rounded,
-                          size: 80,
-                          color: AppColors.sage.withOpacity(0.5),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No Categories Yet',
-                          style: GoogleFonts.poppins(  // ✅ Changed
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return GridView.builder(
-                  padding: const EdgeInsets.all(20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 0.95,
+            if (snap.data!.isEmpty) {
+              return Center(
+                child: Text(
+                  'No Categories Yet',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
-                  itemCount: snap.data!.length,
-                  itemBuilder: (_, i) {
-                    final cat = snap.data![i];
-                    return _CategoryCard(
-                      category: cat,
-                      onTap: () => Navigator.pushNamed(
-                        context,
-                        AppRoutes.categoryDetail,
-                        arguments: {
-                          'categoryId': cat.id,
-                          'categoryName': cat.name,
-                          'categoryColor': cat.color,
-                        },
-                      ),
-                    );
-                  },
+                ),
+              );
+            }
+
+            return GridView.builder(
+              padding: const EdgeInsets.all(20),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 1.5, // Made it shorter since icon is removed
+              ),
+              itemCount: snap.data!.length,
+              itemBuilder: (_, i) {
+                final cat = snap.data![i];
+                return _CategoryCard(
+                  category: cat,
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.categoryDetail,
+                    arguments: {
+                      'categoryId': cat.id,
+                      'categoryName': cat.name,
+                      'categoryColor': cat.color,
+                    },
+                  ),
                 );
               },
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
@@ -126,61 +106,40 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final color = Helpers.hexToColor(category.color);
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.border.withOpacity(0.4)),
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+          border: Border.all(color: color.withOpacity(0.1), width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
+              color: color.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Icon Circle
-            Container(
-              width: 65,
-              height: 65,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  category.icon,
-                  style: const TextStyle(fontSize: 32),
-                ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              category.name.toUpperCase(),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                fontSize: 12,
+                letterSpacing: 0.5,
+                color: color.withOpacity(0.8),
               ),
             ),
-
-            const SizedBox(height: 16),
-
-            // ✅ Category Name with Poppins Font
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                category.name,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(  // ✅ Changed
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                  height: 1.3,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

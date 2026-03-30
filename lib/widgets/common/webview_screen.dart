@@ -46,7 +46,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           widget.title,
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.lightCoral,
+        backgroundColor: AppColors.royalBlue,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
@@ -73,7 +73,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           WebViewWidget(controller: _controller),
           if (_isLoading)
             const Center(
-              child: CircularProgressIndicator(color: AppColors.lightCoral),
+              child: CircularProgressIndicator(color: AppColors.royalBlue),
             ),
         ],
       ),

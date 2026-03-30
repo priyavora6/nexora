@@ -1,14 +1,13 @@
-import 'dart:math';
-
+// lib/providers/prompt_provider.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../models/prompt_model.dart';
 import '../models/category_model.dart';
+import '../models/prompt_model.dart';
 import '../models/subcategory_model.dart';
-import '../services/firestore_service.dart';
 import '../services/local_storage_service.dart';
 
 class PromptProvider extends ChangeNotifier {
-  final FirestoreService _firestoreService = FirestoreService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   List<String> _favoriteIds = [];
   List<String> _recentSearches = [];
@@ -26,10 +25,7 @@ class PromptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ══════════════════════════════════════════════
-  // ⭐ FAVORITES
-  // ══════════════════════════════════════════════
-
+  // ─── FAVORITES ───
   bool isFavorite(String promptId) => _favoriteIds.contains(promptId);
 
   Future<void> toggleFavorite(String promptId) async {
@@ -43,16 +39,7 @@ class PromptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> clearFavorites() async {
-    await LocalStorageService.clearFavorites();
-    _favoriteIds.clear();
-    notifyListeners();
-  }
-
-  // ══════════════════════════════════════════════
-  // 🔍 SEARCH
-  // ══════════════════════════════════════════════
-
+  // ─── SEARCH ───
   Future<void> addRecentSearch(String query) async {
     await LocalStorageService.addRecentSearch(query);
     _recentSearches = await LocalStorageService.getRecentSearches();
@@ -65,44 +52,117 @@ class PromptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<PromptModel>> searchPrompts(String query) =>
-      _firestoreService.searchPrompts(query);
+  // ─── CATEGORIES STREAM ───
+  Stream<List<CategoryModel>> get categoriesStream {
+    return _firestore
+        .collection('categories')
+        .orderBy('order')
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => CategoryModel.fromDoc(d)).toList());
+  }
 
-  // ══════════════════════════════════════════════
-  // 📁 CATEGORIES
-  // ══════════════════════════════════════════════
+  // ─── ALL PROMPTS STREAM ───
+  Stream<List<PromptModel>> get promptsStream {
+    return _firestore
+        .collection('prompts')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => PromptModel.fromDoc(d)).toList());
+  }
 
-  Stream<List<CategoryModel>> get categoriesStream =>
-      _firestoreService.getCategories();
+  // ─── TRENDING PROMPTS STREAM ───
+  Stream<List<PromptModel>> get trendingPromptsStream {
+    return _firestore
+        .collection('prompts')
+        .orderBy('usageCount', descending: true)
+        .limit(50)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => PromptModel.fromDoc(d)).toList());
+  }
 
-  // ══════════════════════════════════════════════
-  // 📂 SUBCATEGORIES
-  // ══════════════════════════════════════════════
+  // ─── SUBCATEGORIES STREAM ───
+  Stream<List<SubcategoryModel>> subcategoriesStream(String categoryId) {
+    return _firestore
+        .collection('categories')
+        .doc(categoryId)
+        .collection('subcategories')
+        .orderBy('order')
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => SubcategoryModel.fromDoc(d)).toList());
+  }
 
-  Stream<List<SubcategoryModel>> subcategoriesStream(String categoryId) =>
-      _firestoreService.getSubcategories(categoryId);
+  // ─── PROMPTS BY USER INTERESTS ───
+  Stream<List<PromptModel>> getPromptsForInterests(List<String> interestIds) {
+    if (interestIds.isEmpty) {
+      return trendingPromptsStream;
+    }
 
-  // ══════════════════════════════════════════════
-  // 📝 PROMPTS
-  // ══════════════════════════════════════════════
+    return _firestore
+        .collection('prompts')
+        .where('categoryId', whereIn: interestIds.take(10).toList())
+        .orderBy('usageCount', descending: true)
+        .limit(30)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => PromptModel.fromDoc(d)).toList());
+  }
 
-  Stream<List<PromptModel>> get promptsStream =>
-      _firestoreService.getPrompts();
+  // ─── CATEGORIES BY USER INTERESTS ───
+  Stream<List<CategoryModel>> getCategoriesForInterests(List<String> interestIds) {
+    if (interestIds.isEmpty) {
+      return categoriesStream;
+    }
 
-  Stream<List<PromptModel>> get recentPromptsStream =>
-      _firestoreService.getRecentPrompts();
+    return _firestore
+        .collection('categories')
+        .where(FieldPath.documentId, whereIn: interestIds.take(10).toList())
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => CategoryModel.fromDoc(d)).toList());
+  }
 
-  Stream<List<PromptModel>> promptsByCategory(String categoryId) =>
-      _firestoreService.getPromptsByCategory(categoryId);
+  // ─── PROMPTS BY CATEGORY ───
+  Stream<List<PromptModel>> getPromptsByCategory(String categoryId) {
+    return _firestore
+        .collection('prompts')
+        .where('categoryId', isEqualTo: categoryId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => PromptModel.fromDoc(d)).toList());
+  }
 
-  Stream<List<PromptModel>> promptsBySubcategory(
-      String categoryId, String subcategoryId) =>
-      _firestoreService.getPromptsBySubcategory(categoryId, subcategoryId);
+  // ─── PROMPTS BY SUBCATEGORY ───
+  Stream<List<PromptModel>> promptsBySubcategory(String categoryId, String subcategoryId) {
+    return _firestore
+        .collection('prompts')
+        .where('categoryId', isEqualTo: categoryId)
+        .where('subcategoryId', isEqualTo: subcategoryId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => PromptModel.fromDoc(d)).toList());
+  }
 
-  // ══════════════════════════════════════════════
-  // 🔥 TRENDING PROMPTS (Changes Daily)
-  // ══════════════════════════════════════════════
+  // ─── INCREMENT USAGE COUNT ───
+  Future<void> incrementUsageCount(String promptId) async {
+    await _firestore.collection('prompts').doc(promptId).update({
+      'usageCount': FieldValue.increment(1),
+    });
+  }
 
-  Stream<List<PromptModel>> get trendingPromptsStream =>
-      _firestoreService.getTrendingPrompts(limit: 5);
+  // ─── SEARCH ───
+  Future<List<PromptModel>> searchPrompts(String query) async {
+    final lowerQuery = query.toLowerCase();
+    final snap = await _firestore.collection('prompts').get();
+    return snap.docs
+        .map((d) => PromptModel.fromDoc(d))
+        .where((p) =>
+            p.title.toLowerCase().contains(lowerQuery) ||
+            p.description.toLowerCase().contains(lowerQuery) ||
+            p.text.toLowerCase().contains(lowerQuery))
+        .toList();
+  }
+
+  Future<void> clearFavorites() async {
+    await LocalStorageService.clearFavorites();
+    _favoriteIds.clear();
+    notifyListeners();
+  }
 }

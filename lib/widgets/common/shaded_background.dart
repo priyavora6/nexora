@@ -12,20 +12,20 @@ class ShadedBackground extends StatelessWidget {
     return Stack(
       children: [
         // 1. Base White Layer
-        Container(color: Colors.white),
+        Container(color: AppColors.lightScaffold),
 
-        // 2. Top Left Soft Sage Orb
+        // 2. Top Left Soft Lavender Orb
         Positioned(
           top: -150,
           left: -100,
-          child: _buildBlurOrb(AppColors.sage.withOpacity(0.25)),
+          child: _buildBlurOrb(AppColors.lavender.withOpacity(0.15)),
         ),
 
-        // 3. Bottom Right Soft Coral Orb
+        // 3. Bottom Right Soft Royal Blue Orb
         Positioned(
           bottom: -150,
           right: -100,
-          child: _buildBlurOrb(AppColors.lightCoral.withOpacity(0.25)),
+          child: _buildBlurOrb(AppColors.royalBlue.withOpacity(0.1)),
         ),
 
         // 4. Actual Screen Content

@@ -9,7 +9,7 @@ class CornerFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: _Painter(
-        color: color ?? AppColors.smokyRose, // ✅ Updated default color
+        color: color ?? AppColors.royalBlue, // ✅ Updated default color
       ),
       size: Size.infinite,
     );
