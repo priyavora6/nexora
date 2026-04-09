@@ -1,5 +1,5 @@
 name: nexora
-description: Next-Gen AI Prompt Platform
+description: Unlock Expert Prompts
 
 publish_to: 'none'
 version: 1.0.0+1
@@ -82,7 +82,7 @@ flutter:
     - assets/nexoralogo.png   # ✅ IMPORTANT (you missed this)
     - assets/icon.png
     - assets/priya.jpg
-    - assets/jigar.jpg
+    - assets/mentor.jpg
     - assets/mulogo.png
     - assets/generated_images.json
     - .env

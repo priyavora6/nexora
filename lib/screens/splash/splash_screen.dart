@@ -183,9 +183,9 @@ class _SplashScreenState extends State<SplashScreen>
 
                     const SizedBox(height: 14),
 
-                    // TAGLINE (UNCHANGED)
+                    // TAGLINE
                     Text(
-                      AppConstants.appTagline,
+                      "UNLOCK EXPERT PROMPTS",
                       style: GoogleFonts.poppins(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,

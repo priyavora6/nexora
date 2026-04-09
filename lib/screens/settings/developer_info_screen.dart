@@ -101,7 +101,7 @@ class _DeveloperInfoScreenState extends State<DeveloperInfoScreen>
                         role: 'Project Mentor',
                         subtitle: 'Faculty Guide',
                         initials: 'JD',
-                        imagePath: 'assets/jigar.jpg',
+                        imagePath: 'assets/mentor.jpg',
                       ),
                     ),
                   ],

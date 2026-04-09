@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppConstants {
   AppConstants._();
 
@@ -23,10 +25,10 @@ class AppConstants {
   static const String keyRecentSearch   = 'recent_searches';
 
   // ═══════════════════════════════════════
-  // 🔐 ADMIN CREDENTIALS
+  // 🔐 ADMIN CREDENTIALS (Loaded from .env)
   // ═══════════════════════════════════════
-  static const String adminEmail    = 'admin@nexora.com';
-  static const String adminPassword = 'Vault@Admin2024';
+  static String get adminEmail    => dotenv.get('ADMIN_EMAIL', fallback: 'admin@nexora.com');
+  static String get adminPassword => dotenv.get('ADMIN_PASSWORD', fallback: 'Vault@Admin2024');
 
   // ═══════════════════════════════════════
   // 🤖 AI PLATFORMS

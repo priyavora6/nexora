@@ -2,15 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class CloudinaryService {
   // ═══════════════════════════════════════
-  // 🔧 CONFIGURATION
+  // 🔧 CONFIGURATION (Loaded from .env)
   // ═══════════════════════════════════════
-  static const String _cloudName = 'dli0cf2x3';
-  static const String _uploadPreset = 'nexora_unsigned'; 
-  static const String _apiKey = '345465847414751';
-  static const String _apiSecret = 'vy2ZNy9aU3r8sCgfpO5yfiIvxAQ';
+  static String get _cloudName => dotenv.get('CLOUDINARY_CLOUD_NAME', fallback: '');
+  static String get _uploadPreset => dotenv.get('CLOUDINARY_UPLOAD_PRESET', fallback: '');
+  static String get _apiKey => dotenv.get('CLOUDINARY_API_KEY', fallback: '');
+  static String get _apiSecret => dotenv.get('CLOUDINARY_API_SECRET', fallback: '');
 
   CloudinaryService();
 
