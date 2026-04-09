@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -9,7 +10,8 @@ import 'config/app_routes.dart';
 import 'config/app_theme.dart';
 import 'providers/auth_provider.dart' as app_auth;
 import 'providers/prompt_provider.dart';
-import 'providers/admin_provider.dart'; // ✅ Import your AdminProvider
+import 'providers/admin_provider.dart';
+import 'providers/theme_provider.dart';
 import 'screens/splash/splash_screen.dart';
 
 void main() async {
@@ -23,7 +25,13 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // 3. Set Status Bar to transparent
+  // 3. Enable Firestore Offline Persistence
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+  );
+
+  // 4. Set Status Bar to transparent
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -40,28 +48,23 @@ class NexoraApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // ✅ User Auth Provider
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => app_auth.AuthProvider()),
-
-        // ✅ Prompt Provider (Data)
         ChangeNotifierProvider(create: (_) => PromptProvider()),
-
-        // ✅ ADDED: Admin Provider (Permissions & State)
         ChangeNotifierProvider(create: (_) => AdminProvider()..checkAdminStatus()),
       ],
-      child: MaterialApp(
-        title: 'Nexora',
-        debugShowCheckedModeBanner: false,
-
-        // ☀️ FORCE LIGHT MODE: Removed ThemeMode.system
-        themeMode: ThemeMode.light, 
-
-        // ☀️ LIGHT THEME
-        theme: AppTheme.lightTheme,
-
-        // 🚀 App Entry Points
-        home: const SplashScreen(),
-        onGenerateRoute: AppRoutes.generateRoute,
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'Nexora',
+            debugShowCheckedModeBanner: false,
+            themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            home: const SplashScreen(),
+            onGenerateRoute: AppRoutes.generateRoute,
+          );
+        },
       ),
     );
   }

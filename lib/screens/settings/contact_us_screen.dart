@@ -1,5 +1,6 @@
 // lib/screens/settings/contact_us_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../config/app_colors.dart';
@@ -11,70 +12,48 @@ class ContactUsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: const GradientAppBar(title: 'CONTACT', showBack: true),
+      backgroundColor: const Color(0xFFFBFBFE), // Same as About Us
+      appBar: const GradientAppBar(title: 'CONTACT US', showBack: true), // Same Navbar style
       body: NexoraBackground(
-        particleCount: 12,
+        particleCount: 20, // Same as About Us
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(24.0, 40.0, 24.0, 32.0),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ─── HEADER SECTION ───
+              // ─── HEADER TEXT ───
               Text(
-                'GET IN TOUCH',
+                'We value your feedback and support. Feel free to reach out to the development team directly.',
                 style: GoogleFonts.inter(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w900,
-                  color: theme.textTheme.headlineSmall?.color,
-                  letterSpacing: -1,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Have questions? Reach out to us!',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
+                  fontSize: 15,
+                  color: const Color(0xFF535A7D), // Same as About Us secondary text
+                  height: 1.5,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 32),
 
-              // ─── ORGANIZATION TILE ───
-              _organizationTile(context, theme),
+              // ─── ORGANIZATION CARD ───
+              _buildInfoCard(
+                iconWidget: Image.asset('assets/mulogo.png', height: 24),
+                title: 'Organization',
+                value: 'Marwadi University',
+                showArrow: false,
+              ),
 
               const SizedBox(height: 16),
 
-              // ─── SUPPORT EMAIL ───
-              _contactTile(
-                context,
-                theme,
-                Icons.email_rounded,
-                'SUPPORT EMAIL',
-                'ceapps@marwadieducation.edu.in',
-                onTap: () => _sendEmail(),
-              ),
-              
-              const SizedBox(height: 60),
-              
-              // ─── FOOTER NOTE ───
-              Center(
-                child: Opacity(
-                  opacity: 0.6,
-                  child: Text(
-                    'Typically responds in 24-48 hours',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textHint,
-                      letterSpacing: 1,
-                    ),
-                  ),
+              // ─── SUPPORT EMAIL CARD (CLICKABLE) ───
+              GestureDetector(
+                onTap: () => _sendEmail(context),
+                child: _buildInfoCard(
+                  iconWidget: const Icon(Icons.mail_outline_rounded, color: AppColors.violet, size: 24),
+                  iconBgColor: AppColors.violet.withOpacity(0.08), // Light purple shade
+                  title: 'Support Email',
+                  value: 'ceapps@marwadieducation.edu.in',
+                  showArrow: true,
+                  subtitle: 'Tap to send an email instantly',
                 ),
               ),
             ],
@@ -84,175 +63,102 @@ class ContactUsScreen extends StatelessWidget {
     );
   }
 
-  Widget _organizationTile(BuildContext context, ThemeData theme) {
+  Widget _buildInfoCard({
+    required Widget iconWidget,
+    Color? iconBgColor,
+    required String title,
+    required String value,
+    required bool showArrow,
+    String? subtitle,
+  }) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.lightInput,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.border.withOpacity(0.5)),
+        color: Colors.white.withOpacity(0.9), // Subtle transparency for background visibility
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.02),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 56,
+            height: 56,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.border, width: 1),
+              color: iconBgColor ?? Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(17),
-              child: Image.asset(
-                'assets/mulogo.png',
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.royalBlue.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(17),
-                    ),
-                    child: const Icon(
-                      Icons.school_rounded,
-                      color: AppColors.royalBlue,
-                      size: 30,
-                    ),
-                  );
-                },
-              ),
-            ),
+            alignment: Alignment.center,
+            child: iconWidget,
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'ORGANIZATION',
+                  title,
                   style: GoogleFonts.inter(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textHint,
-                    letterSpacing: 1.5,
+                    fontSize: 12,
+                    color: const Color(0xFF9BA3C1),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Marwadi University',
+                  value,
                   style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    fontSize: 15,
+                    color: const Color(0xFF1A2238),
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: Colors.grey.shade400,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
+          if (showArrow)
+            Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey.shade300, size: 16),
         ],
       ),
     );
   }
 
-  Widget _contactTile(
-      BuildContext context,
-      ThemeData theme,
-      IconData icon,
-      String title,
-      String subtitle,
-      {required VoidCallback onTap}
-      ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppColors.lightInput,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: AppColors.border.withOpacity(0.5)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.royalBlue.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Icon(icon, color: AppColors.royalBlue, size: 26),
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textHint,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.inter(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: AppColors.textHint.withOpacity(0.5),
-              size: 14,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Future<void> _sendEmail(BuildContext context) async {
+    const String email = 'ceapps@marwadieducation.edu.in';
+    const String subject = 'Nexora Feedback';
+    const String body = 'Hello Team,\n\nI would like to share the following feedback:\n';
 
-  Future<void> _sendEmail() async {
-    final Uri emailLaunchUri = Uri(
+    final Uri uri = Uri(
       scheme: 'mailto',
-      path: 'ceapps@marwadieducation.edu.in',
-      query: _encodeQueryParameters(<String, String>{
-        'subject': 'Nexora App Support Inquiry',
-      }),
+      path: email,
+      query: 'subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}',
     );
 
-    if (await canLaunchUrl(emailLaunchUri)) {
-      await launchUrl(emailLaunchUri);
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      await Clipboard.setData(const ClipboardData(text: email));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Email address copied to clipboard')),
+        );
+      }
     }
-  }
-
-  String? _encodeQueryParameters(Map<String, String> params) {
-    return params.entries
-        .map((MapEntry<String, String> e) =>
-            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
-        .join('&');
   }
 }

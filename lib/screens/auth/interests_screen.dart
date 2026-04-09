@@ -8,15 +8,18 @@ import '../../providers/auth_provider.dart';
 import '../../providers/prompt_provider.dart';
 import '../../widgets/layout/gradient_app_bar.dart';
 import '../../widgets/common/custom_button.dart';
+import '../../utils/helpers.dart';
 
 class InterestsSelectionScreen extends StatefulWidget {
   const InterestsSelectionScreen({Key? key}) : super(key: key);
 
   @override
-  State<InterestsSelectionScreen> createState() => _InterestsSelectionScreenState();
+  State<InterestsSelectionScreen> createState() =>
+      _InterestsSelectionScreenState();
 }
 
-class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> {
+class _InterestsSelectionScreenState
+    extends State<InterestsSelectionScreen> {
   final List<String> _selectedIds = [];
   bool _isSaving = false;
 
@@ -34,7 +37,9 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> {
         Navigator.pushReplacementNamed(context, AppRoutes.home);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(authProv.error ?? "Failed to save interests")),
+          SnackBar(
+              content:
+              Text(authProv.error ?? "Failed to save interests")),
         );
       }
     }
@@ -46,7 +51,8 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.lightScaffold,
-      appBar: const GradientAppBar(title: 'PERSONALIZE', showBack: false),
+      appBar:
+      const GradientAppBar(title: 'PERSONALIZE', showBack: false),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -58,7 +64,7 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> {
                 fontSize: 32,
                 fontWeight: FontWeight.w900,
                 height: 1.1,
-                color: AppColors.textPrimary,
+                color: Color(0xFF7E57C2), // Changed to Professional Navy
               ),
             ),
           ),
@@ -68,50 +74,105 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> {
               "Select categories to build your custom feed.",
               style: GoogleFonts.inter(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondary, // Changed to Muted Blue-Grey
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
           const SizedBox(height: 30),
+
+          /// 🔥 GRID
           Expanded(
             child: StreamBuilder(
               stream: promptProv.categoriesStream,
               builder: (context, snap) {
-                if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+                if (!snap.hasData) {
+                  return const Center(
+                      child: CircularProgressIndicator());
+                }
+
                 final cats = snap.data!;
+
                 return GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 22),
+                  gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 1.4,
+                    childAspectRatio: 1.45,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                   ),
                   itemCount: cats.length,
                   itemBuilder: (context, i) {
-                    final isSelected = _selectedIds.contains(cats[i].id);
+                    final cat = cats[i];
+                    final isSelected =
+                    _selectedIds.contains(cat.id);
+
+                    final color =
+                    Helpers.hexToColor(cat.color);
+
                     return GestureDetector(
                       onTap: () => setState(() => isSelected
-                          ? _selectedIds.remove(cats[i].id)
-                          : _selectedIds.add(cats[i].id)),
+                          ? _selectedIds.remove(cat.id)
+                          : _selectedIds.add(cat.id)),
+
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
+                        duration:
+                        const Duration(milliseconds: 250),
+
                         decoration: BoxDecoration(
-                          color: isSelected ? AppColors.royalBlue : AppColors.lightInput,
-                          borderRadius: BorderRadius.circular(24),
+                          color: isSelected
+                              ? color.withOpacity(0.12)
+                              : color.withOpacity(0.05),
+
+                          borderRadius:
+                          BorderRadius.circular(20),
+
                           border: Border.all(
-                            color: isSelected ? AppColors.royalBlue : AppColors.border,
+                            color: color,
+                            width: 1.4,
                           ),
+
+                          boxShadow: isSelected
+                              ? [
+                            BoxShadow(
+                              color: color.withOpacity(0.45),
+                              blurRadius: 18,
+                              spreadRadius: 1,
+                              offset: const Offset(0, 6),
+                            ),
+                            BoxShadow(
+                              color: Colors.black
+                                  .withOpacity(0.05),
+                              blurRadius: 6,
+                              offset:
+                              const Offset(0, 3),
+                            ),
+                          ]
+                              : [],
                         ),
+
                         child: Center(
-                          child: Text(
-                            cats[i].name.toUpperCase(),
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              color: isSelected ? Colors.white : AppColors.textPrimary,
-                              letterSpacing: 1,
+                          child: Padding(
+                            padding:
+                            const EdgeInsets.symmetric(
+                                horizontal: 10),
+
+                            child: Text(
+                              cat.name.toUpperCase(),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow:
+                              TextOverflow.ellipsis,
+
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1,
+
+                                color: color,
+                              ),
                             ),
                           ),
                         ),
@@ -122,12 +183,15 @@ class _InterestsSelectionScreenState extends State<InterestsSelectionScreen> {
               },
             ),
           ),
+
+          /// 🔘 BUTTON
           Padding(
-            padding: const EdgeInsets.all(28),
+            padding: const EdgeInsets.all(26),
             child: CustomButton(
               text: 'FINISH SETUP',
               isLoading: _isSaving,
-              onPressed: _selectedIds.isNotEmpty ? _handleFinish : null,
+              onPressed:
+              _selectedIds.isNotEmpty ? _handleFinish : null,
             ),
           ),
         ],

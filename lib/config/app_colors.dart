@@ -4,84 +4,87 @@ class AppColors {
   AppColors._();
 
   // ═════════════════════════════════════════════════════════════
-  // 🌌 NEXORA BLUE & PURPLE PALETTE (Professional & Modern)
+  // 🌌 NEXORA BRAND COLORS (Professional & Modern)
   // ═════════════════════════════════════════════════════════════
 
-  // Primary Brand Colors
-  static const Color deepNavy     = Color(0xFF1A237E); // Professional Deep Navy
-  static const Color royalBlue    = Color(0xFF3949AB); // Rich Royal Blue
-  static const Color indigo       = Color(0xFF5C6BC0); // Vibrant Indigo
-  static const Color violet       = Color(0xFF7E57C2); // Creative Violet
-  static const Color lavender     = Color(0xFF9575CD); // Soft Lavender
-  static const Color mistyBlue    = Color(0xFFE8EAF6); // Very Light Blue Background
+  // Primary Brand Colors (From dark theme spec)
+  static const Color primary      = Color(0xFF6366F6); // Royal Blue
+  static const Color secondary    = Color(0xFF06B6D4); // Cyan/Secondary
+  
+  // Legacy aliases to fix build errors (mapped to new palette)
+  static const Color royalBlue    = primary; 
+  static const Color violet       = Color(0xFF8B5CF6);
+  static const Color indigo       = Color(0xFF5C6BC0);
+  static const Color lavender     = Color(0xFF9575CD);
+  
+  // 🌙 Dark Theme Palette
+  static const Color darkScaffold = Color(0xFF0F0F23); // Deep Space Blue
+  static const Color darkCard     = Color(0xFF1A1B2E); // Dark Surface
+  static const Color darkInput    = Color(0xFF25273D); // Dark Input BG
+  static const Color darkBorder   = Color(0xFF404462); // Dark Outline
 
-  // ═════════════════════════════════════════════════════════════
-  // ⚪ LIGHT THEME (Clean & Modern)
-  // ═════════════════════════════════════════════════════════════
+  // ☀️ Light Theme Palette
+  static const Color lightScaffold = Color(0xFFF8FAFC); // Slate-50
+  static const Color lightCard     = Colors.white;      // White
+  static const Color lightInput    = Color(0xFFF1F5F9); // Slate-100
+  static const Color lightBorder   = Color(0xFFE2E8F0); // Slate-200
 
-  static const Color lightScaffold = Colors.white;
-  static const Color lightCard     = Colors.white;
-  static const Color lightInput    = Color(0xFFF5F7FF); // Faint Blue Tint for inputs
+  // Legacy alias for border
+  static const Color border        = lightBorder;
 
   // Text Colors (High Contrast)
-  static const Color textPrimary   = Color(0xFF101426); // Near Black Navy
-  static const Color textSecondary = Color(0xFF535A7D); // Muted Blue-Grey
-  static const Color textHint      = Color(0xFF9BA3C1); // Subtle Hint
+  static const Color textPrimaryLight   = Color(0xFF1E293B); // Slate-800
+  static const Color textSecondaryLight = Color(0xFF64748B); // Slate-500
+  
+  // Legacy aliases for text
+  static const Color textPrimary        = textPrimaryLight;
+  static const Color textSecondary      = textSecondaryLight;
+  static const Color textHint           = Color(0xFF94A3B8); // Slate-400
+  
+  static const Color textPrimaryDark    = Color(0xFFE5E7EB); // Light Grey
+  static const Color textSecondaryDark  = Color(0xFFB8BDC4); // Muted Grey
 
   // ═════════════════════════════════════════════════════════════
-  // 🌈 PROFESSIONAL GRADIENTS (Blue to Purple)
+  // 🌈 PROFESSIONAL GRADIENTS
   // ═════════════════════════════════════════════════════════════
 
-  // Main Brand Gradient (Navigation + Splash Text)
-  // This looks very high-end (Indigo to Royal Blue)
+  // Main Brand Gradient (Navigation + Top Bars)
   static const LinearGradient navGradient = LinearGradient(
-    colors: [royalBlue, violet],
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
-  );
-
-  // Premium Button Gradient
-  static const LinearGradient buttonGradient = LinearGradient(
-    colors: [royalBlue, violet],
+    colors: [primary, Color(0xFF8B5CF6)], // Royal Blue to Violet
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  // Accent Gradient (Sky to Indigo)
-  static const LinearGradient accentGradient = LinearGradient(
-    colors: [Color(0xFF42A5F5), indigo],
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [primary, secondary],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-
-  // Text Gradient (For Titles)
-  static const LinearGradient textGradient = LinearGradient(
-    colors: [royalBlue, Color(0xFF9C27B0)], // Blue to Deep Magenta/Purple
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  
+  // Legacy aliases for gradients
+  static const LinearGradient buttonGradient = primaryGradient;
+  static const LinearGradient textGradient   = navGradient;
 
   // ═════════════════════════════════════════════════════════════
   // 🎯 STATUS & ACCENTS
   // ═════════════════════════════════════════════════════════════
 
-  static const Color accent  = royalBlue;
-  static const Color success = Color(0xFF4CAF50); // Clean Green
-  static const Color error   = Color(0xFFD32F2F); // Alert Red
-  static const Color border  = Color(0xFFDDE1F0); // Subtle Blueish Border
+  static const Color success = Color(0xFF10B981); // Emerald Green
+  static const Color error   = Color(0xFFEF4444); // Rose Red
+  static const Color warning = Color(0xFFF59E0B); // Amber
 
   // ═════════════════════════════════════════════════════════════
-  // 🏷️ CATEGORY COLORS (Variations of Blue and Purple)
+  // 🏷️ CATEGORY COLORS
   // ═════════════════════════════════════════════════════════════
 
   static const List<Color> categoryColors = [
-    royalBlue,
-    violet,
-    Color(0xFF0288D1), // Sky Blue
-    indigo,
-    Color(0xFFD32F2F), // High Contrast Pink-Red
-    Color(0xFF7B1FA2), // Deep Purple
-    Color(0xFF0097A7), // Teal Blue
+    primary,
+    secondary,
+    Color(0xFF8B5CF6), // Violet
+    Color(0xFFEC4899), // Pink
+    Color(0xFFF59E0B), // Amber
+    Color(0xFF10B981), // Emerald
+    Color(0xFF3B82F6), // Blue
   ];
 
   static Color getRandomCategoryColor(int index) {

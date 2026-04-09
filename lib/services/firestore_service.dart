@@ -344,17 +344,15 @@ class FirestoreService {
 
   // TRENDING PROMPTS
   Stream<List<PromptModel>> getTrendingPrompts({int limit = 5}) {
-    final today = DateTime.now();
-    final daySeed = today.year * 10000 + today.month * 100 + today.day;
-
+    // We increase the pool size to 200 to get a better "mix masala" of categories
     return _db
         .collection('prompts')
-        .orderBy('createdAt', descending: true)
-        .limit(50)
+        .limit(200) 
         .snapshots()
         .map((snap) {
       final prompts = snap.docs.map((d) => PromptModel.fromDoc(d)).toList();
-      prompts.shuffle(Random(daySeed));
+      // Truly random shuffle every time for variety
+      prompts.shuffle();
       return prompts.take(limit).toList();
     });
   }

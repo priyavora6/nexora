@@ -9,6 +9,7 @@ import '../../config/app_routes.dart';
 import '../../models/prompt_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/prompt_provider.dart';
+import '../../providers/theme_provider.dart';
 import '../../widgets/cards/prompt_card.dart';
 import '../../widgets/layout/bottom_nav_bar.dart';
 import '../../widgets/layout/gradient_app_bar.dart';
@@ -34,12 +35,27 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
     final promptProv = Provider.of<PromptProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final userInterests = auth.userInterests;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: const GradientAppBar(title: 'NEXORA'),
+      appBar: GradientAppBar(
+        title: 'NEXORA',
+        actions: [
+          IconButton(
+            icon: Icon(
+              themeProvider.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              themeProvider.toggleTheme(!themeProvider.isDarkMode);
+            },
+          ),
+        ],
+      ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -64,7 +80,7 @@ class HomeScreen extends StatelessWidget {
                               Text(
                                 '${_getGreeting()}, ',
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.textSecondary.withOpacity(0.6),
+                                  color: isDark ? Colors.white : theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
                                 ),
                               ),
                               Flexible(
@@ -72,6 +88,7 @@ class HomeScreen extends StatelessWidget {
                                   auth.userName,
                                   style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w700,
+                                    color: isDark ? Colors.white : theme.textTheme.titleLarge?.color,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -82,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                           Text(
                             _getTagline(),
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppColors.lavender,
+                              color: isDark ? Colors.white : AppColors.primary,
                               fontStyle: FontStyle.italic,
                             ),
                           ),
@@ -130,7 +147,7 @@ class HomeScreen extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: AppColors.royalBlue.withOpacity(0.15),
+            color: AppColors.primary.withOpacity(0.15),
             width: 1,
           ),
         ),
@@ -142,7 +159,7 @@ class HomeScreen extends StatelessWidget {
             gradient: AppColors.navGradient,
             boxShadow: [
               BoxShadow(
-                color: AppColors.royalBlue.withOpacity(0.2),
+                color: AppColors.primary.withOpacity(0.2),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
@@ -205,7 +222,7 @@ class HomeScreen extends StatelessWidget {
           return const Center(
             child: Padding(
               padding: EdgeInsets.all(40),
-              child: CircularProgressIndicator(color: AppColors.royalBlue),
+              child: CircularProgressIndicator(color: AppColors.primary),
             ),
           );
         }
@@ -221,14 +238,14 @@ class HomeScreen extends StatelessWidget {
                   Icon(
                     Icons.auto_awesome_outlined,
                     size: 48,
-                    color: AppColors.royalBlue.withOpacity(0.4),
+                    color: AppColors.primary.withOpacity(0.4),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No prompts found for your interests',
                     style: GoogleFonts.inter(
                       fontSize: 14,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
                     textAlign: TextAlign.center,
@@ -238,7 +255,7 @@ class HomeScreen extends StatelessWidget {
                     'Try updating your interests in settings',
                     style: GoogleFonts.inter(
                       fontSize: 12,
-                      color: AppColors.textHint,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -293,7 +310,7 @@ class HomeScreen extends StatelessWidget {
                 'SEE ALL',
                 style: GoogleFonts.inter(
                   fontSize: 11,
-                  color: AppColors.royalBlue,
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.8,
                 ),

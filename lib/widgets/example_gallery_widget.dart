@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'video_player_widget.dart';
 
 class ExampleGalleryWidget extends StatefulWidget {
   final List<String> exampleUrls;
-  final List<String> exampleTypes; // "image" or "video"
   final double height;
   final bool showIndicator;
   final BorderRadius? borderRadius;
@@ -14,7 +12,6 @@ class ExampleGalleryWidget extends StatefulWidget {
   const ExampleGalleryWidget({
     Key? key,
     required this.exampleUrls,
-    required this.exampleTypes,
     this.height = 300,
     this.showIndicator = true,
     this.borderRadius,
@@ -61,11 +58,7 @@ class _ExampleGalleryWidgetState extends State<ExampleGalleryWidget> {
             itemCount: widget.exampleUrls.length,
             itemBuilder: (context, index) {
               final url = widget.exampleUrls[index];
-              final type = index < widget.exampleTypes.length
-                  ? widget.exampleTypes[index]
-                  : 'image';
-
-              return _buildGalleryItem(url, type, index);
+              return _buildGalleryItem(url, index);
             },
           ),
         ),
@@ -80,17 +73,12 @@ class _ExampleGalleryWidgetState extends State<ExampleGalleryWidget> {
     );
   }
 
-  Widget _buildGalleryItem(String url, String type, int index) {
+  Widget _buildGalleryItem(String url, int index) {
     return GestureDetector(
       onTap: () => _openFullscreen(index),
       child: ClipRRect(
         borderRadius: widget.borderRadius ?? BorderRadius.circular(16),
-        child: type == 'video'
-            ? VideoPlayerWidget(
-          videoUrl: url,
-          autoPlay: false,
-        )
-            : CachedNetworkImage(
+        child: CachedNetworkImage(
           imageUrl: url,
           fit: BoxFit.cover,
           placeholder: (context, url) => _buildLoadingPlaceholder(),
@@ -123,24 +111,24 @@ class _ExampleGalleryWidgetState extends State<ExampleGalleryWidget> {
 
   Widget _buildLoadingPlaceholder() {
     return Container(
-      color: Colors.grey.shade200,
+      color: Colors.grey.shade100,
       child: const Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(strokeWidth: 2),
       ),
     );
   }
 
   Widget _buildErrorWidget() {
     return Container(
-      color: Colors.grey.shade200,
+      color: Colors.grey.shade100,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.broken_image, size: 64, color: Colors.grey.shade400),
+          Icon(Icons.broken_image_outlined, size: 48, color: Colors.grey.shade400),
           const SizedBox(height: 8),
           Text(
             'Failed to load image',
-            style: TextStyle(color: Colors.grey.shade600),
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
           ),
         ],
       ),
@@ -151,17 +139,18 @@ class _ExampleGalleryWidgetState extends State<ExampleGalleryWidget> {
     return Container(
       height: widget.height,
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: Colors.grey.shade50,
         borderRadius: widget.borderRadius ?? BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.image_not_supported, size: 64, color: Colors.grey.shade400),
+          Icon(Icons.image_not_supported_outlined, size: 48, color: Colors.grey.shade300),
           const SizedBox(height: 8),
           Text(
             'No preview available',
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
           ),
         ],
       ),
@@ -174,7 +163,6 @@ class _ExampleGalleryWidgetState extends State<ExampleGalleryWidget> {
       MaterialPageRoute(
         builder: (context) => _FullscreenGallery(
           exampleUrls: widget.exampleUrls,
-          exampleTypes: widget.exampleTypes,
           initialIndex: initialIndex,
         ),
       ),
@@ -183,18 +171,16 @@ class _ExampleGalleryWidgetState extends State<ExampleGalleryWidget> {
 }
 
 // ═══════════════════════════════════════════════
-// FULLSCREEN GALLERY VIEW
+// FULLSCREEN GALLERY VIEW (IMAGE ONLY)
 // ═══════════════════════════════════════════════
 
 class _FullscreenGallery extends StatefulWidget {
   final List<String> exampleUrls;
-  final List<String> exampleTypes;
   final int initialIndex;
 
   const _FullscreenGallery({
     Key? key,
     required this.exampleUrls,
-    required this.exampleTypes,
     this.initialIndex = 0,
   }) : super(key: key);
 
@@ -225,14 +211,12 @@ class _FullscreenGalleryState extends State<_FullscreenGallery> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        title: Text('${_currentIndex + 1} / ${widget.exampleUrls.length}'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(
+          '${_currentIndex + 1} / ${widget.exampleUrls.length}',
+          style: const TextStyle(color: Colors.white, fontSize: 16),
+        ),
       ),
       body: PhotoViewGallery.builder(
         pageController: _pageController,
@@ -244,30 +228,18 @@ class _FullscreenGalleryState extends State<_FullscreenGallery> {
         },
         builder: (context, index) {
           final url = widget.exampleUrls[index];
-          final type = index < widget.exampleTypes.length
-              ? widget.exampleTypes[index]
-              : 'image';
-
-          if (type == 'video') {
-            return PhotoViewGalleryPageOptions.customChild(
-              child: VideoPlayerWidget(
-                videoUrl: url,
-                autoPlay: true,
-              ),
-            );
-          }
 
           return PhotoViewGalleryPageOptions(
             imageProvider: CachedNetworkImageProvider(url),
             minScale: PhotoViewComputedScale.contained,
-            maxScale: PhotoViewComputedScale.covered * 2,
+            maxScale: PhotoViewComputedScale.covered * 2.5,
             heroAttributes: PhotoViewHeroAttributes(tag: 'example_$index'),
           );
         },
         scrollPhysics: const BouncingScrollPhysics(),
         backgroundDecoration: const BoxDecoration(color: Colors.black),
         loadingBuilder: (context, event) => const Center(
-          child: CircularProgressIndicator(color: Colors.white),
+          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
         ),
       ),
     );

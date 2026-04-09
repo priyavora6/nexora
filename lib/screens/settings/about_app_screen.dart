@@ -14,32 +14,19 @@ class AboutAppScreen extends StatefulWidget {
 
 class _AboutAppScreenState extends State<AboutAppScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
+
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  );
+
+  late final Animation<double> scale = Tween<double>(begin: 0.85, end: 1.0).animate(
+    CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+  );
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.elasticOut,
-      ),
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
-      ),
-    );
-
     _controller.forward();
   }
 
@@ -49,189 +36,191 @@ class _AboutAppScreenState extends State<AboutAppScreen>
     super.dispose();
   }
 
+  Widget _animatedItem({required Widget child, int delay = 0}) {
+    return TweenAnimationBuilder<double>(
+      duration: Duration(milliseconds: 800 + delay),
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      curve: Curves.easeOutCubic,
+      builder: (_, value, child) {
+        return Opacity(
+          opacity: value.clamp(0.0, 1.0),
+          child: Transform.translate(
+            offset: Offset(0, 40 * (1 - value)),
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: const GradientAppBar(title: 'ABOUT', showBack: true),
       body: NexoraBackground(
-        particleCount: 15,
+        particleCount: 20,
         child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Transform.scale(
-                        scale: _scaleAnimation.value,
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // ─── APP LOGO ───
-                      Container(
-                        height: 120,
-                        width: 120,
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          gradient: AppColors.navGradient,
-                          borderRadius: BorderRadius.circular(32),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.royalBlue.withOpacity(0.3),
-                              blurRadius: 30,
-                              offset: const Offset(0, 15),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            child: Column(
+              children: [
+                
+                /// ─── HEADER ───
+                _animatedItem(
+                  delay: 0,
+                  child: Center(
+                    child: Column(
+                      children: [
+                        ScaleTransition(
+                          scale: scale,
+                          child: Container(
+                            height: 160, // Increased from 120
+                            width: 160,  // Increased from 120
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                              shape: BoxShape.circle,
                             ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(28),
-                          child: Image.asset(
-                            'assets/icon.jpg',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => const Icon(
-                              Icons.auto_awesome_rounded,
-                              color: Colors.white,
-                              size: 48,
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/icon.png',
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  Icons.auto_awesome_rounded,
+                                  color: AppColors.primary,
+                                  size: 80, // Increased from 60
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // ─── APP NAME ───
-                      Text(
-                        'NEXORA',
-                        style: GoogleFonts.inter(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 4,
-                          color: theme.textTheme.headlineMedium?.color,
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // ─── TAGLINE ───
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: AppColors.royalBlue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(
-                            color: AppColors.royalBlue.withOpacity(0.15),
-                          ),
-                        ),
-                        child: Text(
-                          'AI PROMPT LIBRARY',
+                        const SizedBox(height: 24),
+                        Text(
+                          'Nexora',
                           style: GoogleFonts.inter(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.royalBlue,
-                            letterSpacing: 2,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            color: theme.textTheme.displayLarge?.color,
                           ),
                         ),
-                      ),
-
-                      const SizedBox(height: 48),
-
-                      // ─── DESCRIPTION CARD ───
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: theme.cardColor,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: AppColors.border.withOpacity(0.5),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Inspiring your creative journey',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: theme.textTheme.bodyMedium?.color,
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.02),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
                         ),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Nexora is a creative prompt management platform designed to help users discover, organize, and use high-quality prompts for AI-based content creation.',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.textPrimary,
-                                height: 1.6,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              'It provides a structured category system, easy prompt access, and a simple interface to enhance productivity and creativity.',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.textSecondary,
-                                height: 1.6,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      ],
+                    ),
+                  ),
+                ),
 
-                      const SizedBox(height: 60),
+                const SizedBox(height: 48),
 
-                      // ─── FOOTER ───
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.favorite_rounded,
-                            size: 14,
-                            color: AppColors.royalBlue.withOpacity(0.6),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'MADE FOR CREATORS',
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 2,
-                              color: AppColors.textHint,
-                            ),
-                          ),
-                        ],
+                /// ─── DIRECT CONTENT SECTIONS ───
+                _animatedItem(
+                  delay: 150,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _infoSection(
+                        context,
+                        Icons.auto_awesome_outlined,
+                        'What is Nexora?',
+                        'Nexora is a modern platform designed to help creators discover, manage, and use high-quality AI prompts effortlessly across various platforms.',
                       ),
-                      
-                      const SizedBox(height: 8),
-                      
+                      const SizedBox(height: 32),
+                      _infoSection(
+                        context,
+                        Icons.rocket_launch_outlined,
+                        'Our Mission',
+                        'To bridge the gap between imagination and AI by providing hand-tested, professional prompts that yield stunning creative results.',
+                      ),
+                      const SizedBox(height: 32),
+                      _infoSection(
+                        context,
+                        Icons.devices_rounded,
+                        'Multi-Platform',
+                        'Optimized prompts for Midjourney, DALL-E, ChatGPT, Stable Diffusion, and many more industry-leading AI tools.',
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 60),
+
+                /// ─── FOOTER ───
+                _animatedItem(
+                  delay: 400,
+                  child: Column(
+                    children: [
                       Text(
-                        'v1.0.0',
+                        'Version 1.0.0',
                         style: GoogleFonts.inter(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textHint.withOpacity(0.5),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _infoSection(BuildContext context, IconData icon, String title, String content) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: AppColors.primary, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: theme.textTheme.titleLarge?.color,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Text(
+            content,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: theme.textTheme.bodyMedium?.color,
+              height: 1.6,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -5,6 +5,8 @@ import '../models/category_model.dart';
 import '../models/prompt_model.dart';
 import '../models/subcategory_model.dart';
 import '../services/local_storage_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../config/app_constants.dart';
 
 class PromptProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -46,13 +48,20 @@ class PromptProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> removeSearchItem(String query) async {
+    final prefs = await SharedPreferences.getInstance();
+    _recentSearches.remove(query);
+    await prefs.setStringList(AppConstants.keyRecentSearch, _recentSearches);
+    notifyListeners();
+  }
+
   Future<void> clearSearches() async {
     await LocalStorageService.clearRecentSearches();
     _recentSearches.clear();
     notifyListeners();
   }
 
-  // ─── CATEGORIES STREAM ───
+  // ... (rest of the streams remain the same)
   Stream<List<CategoryModel>> get categoriesStream {
     return _firestore
         .collection('categories')
@@ -61,7 +70,6 @@ class PromptProvider extends ChangeNotifier {
         .map((snap) => snap.docs.map((d) => CategoryModel.fromDoc(d)).toList());
   }
 
-  // ─── ALL PROMPTS STREAM ───
   Stream<List<PromptModel>> get promptsStream {
     return _firestore
         .collection('prompts')
@@ -70,7 +78,6 @@ class PromptProvider extends ChangeNotifier {
         .map((snap) => snap.docs.map((d) => PromptModel.fromDoc(d)).toList());
   }
 
-  // ─── TRENDING PROMPTS STREAM ───
   Stream<List<PromptModel>> get trendingPromptsStream {
     return _firestore
         .collection('prompts')
@@ -80,7 +87,6 @@ class PromptProvider extends ChangeNotifier {
         .map((snap) => snap.docs.map((d) => PromptModel.fromDoc(d)).toList());
   }
 
-  // ─── SUBCATEGORIES STREAM ───
   Stream<List<SubcategoryModel>> subcategoriesStream(String categoryId) {
     return _firestore
         .collection('categories')
@@ -91,12 +97,8 @@ class PromptProvider extends ChangeNotifier {
         .map((snap) => snap.docs.map((d) => SubcategoryModel.fromDoc(d)).toList());
   }
 
-  // ─── PROMPTS BY USER INTERESTS ───
   Stream<List<PromptModel>> getPromptsForInterests(List<String> interestIds) {
-    if (interestIds.isEmpty) {
-      return trendingPromptsStream;
-    }
-
+    if (interestIds.isEmpty) return trendingPromptsStream;
     return _firestore
         .collection('prompts')
         .where('categoryId', whereIn: interestIds.take(10).toList())
@@ -106,12 +108,8 @@ class PromptProvider extends ChangeNotifier {
         .map((snap) => snap.docs.map((d) => PromptModel.fromDoc(d)).toList());
   }
 
-  // ─── CATEGORIES BY USER INTERESTS ───
   Stream<List<CategoryModel>> getCategoriesForInterests(List<String> interestIds) {
-    if (interestIds.isEmpty) {
-      return categoriesStream;
-    }
-
+    if (interestIds.isEmpty) return categoriesStream;
     return _firestore
         .collection('categories')
         .where(FieldPath.documentId, whereIn: interestIds.take(10).toList())
@@ -119,7 +117,6 @@ class PromptProvider extends ChangeNotifier {
         .map((snap) => snap.docs.map((d) => CategoryModel.fromDoc(d)).toList());
   }
 
-  // ─── PROMPTS BY CATEGORY ───
   Stream<List<PromptModel>> getPromptsByCategory(String categoryId) {
     return _firestore
         .collection('prompts')
@@ -129,7 +126,6 @@ class PromptProvider extends ChangeNotifier {
         .map((snap) => snap.docs.map((d) => PromptModel.fromDoc(d)).toList());
   }
 
-  // ─── PROMPTS BY SUBCATEGORY ───
   Stream<List<PromptModel>> promptsBySubcategory(String categoryId, String subcategoryId) {
     return _firestore
         .collection('prompts')
@@ -140,14 +136,12 @@ class PromptProvider extends ChangeNotifier {
         .map((snap) => snap.docs.map((d) => PromptModel.fromDoc(d)).toList());
   }
 
-  // ─── INCREMENT USAGE COUNT ───
   Future<void> incrementUsageCount(String promptId) async {
     await _firestore.collection('prompts').doc(promptId).update({
       'usageCount': FieldValue.increment(1),
     });
   }
 
-  // ─── SEARCH ───
   Future<List<PromptModel>> searchPrompts(String query) async {
     final lowerQuery = query.toLowerCase();
     final snap = await _firestore.collection('prompts').get();

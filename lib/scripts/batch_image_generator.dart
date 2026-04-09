@@ -19,31 +19,27 @@ import '../services/seed/prompts/vehicles_travel_prompts.dart';
 import '../services/seed/prompts/social_media_prompts.dart';
 import '../services/seed/prompts/photo_enhancement_prompts.dart';
 import '../services/seed/prompts/ai_tools_platforms_prompts.dart';
+import '../services/seed/prompts/gaming_esports_prompts.dart';
+import '../services/seed/prompts/architecture_interiors_prompts.dart';
 
 class BatchImageGenerator {
   final MediaGeneratorService _mediaService = MediaGeneratorService();
 
-  // Configuration
-  static const int DELAY_SECONDS = 3; // Delay between requests
+  static const int DELAY_SECONDS = 3; 
 
-  /// Main function to generate all images with Resume logic
   Future<void> generateAllImages() async {
     print('═══════════════════════════════════════════════════════════');
-    print('🎨 AI MEDIA BATCH GENERATOR (WITH RESUME)');
+    print('🎨 AI IMAGE BATCH GENERATOR');
     print('═══════════════════════════════════════════════════════════\n');
 
-    // 1. ALWAYS LOAD EXISTING DATA FIRST
     Map<String, dynamic> generatedResults = await _loadExistingProgress();
-    print('📊 Resuming... Already have ${generatedResults.length} images.');
-
-    // 2. Get all prompts from library
     final allPrompts = _getAllPrompts();
 
     print('📊 Total prompts in library: ${allPrompts.length}');
-    print('⏳ Remaining to process: ${allPrompts.length - generatedResults.length}');
-    print('⏱️  Estimated time: ${((allPrompts.length - generatedResults.length) * (DELAY_SECONDS + 10) / 60).ceil()} minutes\n');
-
-    int successCount = generatedResults.length;
+    print('📊 Total entries in JSON:    ${generatedResults.length}');
+    
+    int successCount = 0;
+    int skippedCount = 0;
     int failedCount = 0;
 
     for (int i = 0; i < allPrompts.length; i++) {
@@ -53,126 +49,77 @@ class BatchImageGenerator {
       final subcategory = item['subcategory']?.toString() ?? '';
       final promptText = item['text']?.toString() ?? '';
 
-      final num = i + 1;
-      final total = allPrompts.length;
-
-      // 2. SKIP if already in JSON
+      // ✅ FIX: Only skip if the title exists AND has a valid URL
       if (generatedResults.containsKey(title)) {
-        continue;
+        final existingUrl = generatedResults[title]['cloudinaryUrl']?.toString() ?? '';
+        if (existingUrl.isNotEmpty && existingUrl.startsWith('http')) {
+          skippedCount++;
+          continue;
+        }
       }
 
-      print('\n[$num/$total] 📸 Processing: $title');
+      print('\n[${i + 1}/${allPrompts.length}] 📸 Processing: $title');
       print('   Category: $category > $subcategory');
 
       try {
-        // 3. GENERATE & UPLOAD IMAGE
         String url = await _mediaService.generateImage(
           promptText: promptText,
           title: title,
           category: category,
         );
 
-        String videoUrl = "";
-
-        // Optional: Generate Video if category requires it
-        if (url.isNotEmpty && _mediaService.needsVideo(category, subcategory)) {
-          print('   🎞️ VIDEO REQUIRED: Animating now...');
-          videoUrl = await _mediaService.generateVideo(
-            promptText: promptText,
-            title: title,
-            category: category,
-            subcategory: subcategory,
-            imageUrl: url,
-          );
-        }
-
         if (url.isNotEmpty) {
-          // 4. ADD TO MAP
           generatedResults[title] = {
             "title": title,
             "category": category,
             "subcategory": subcategory,
             "platform": item['platform'],
             "cloudinaryUrl": url,
-            "videoUrl": videoUrl,
             "isFeatured": item['isFeatured'],
           };
 
-          successCount++;
-
-          // 5. 🔥 CRITICAL: SAVE TO FILE IMMEDIATELY AFTER EVERY IMAGE
-          // This way, if it crashes, you never lose even 1 image!
           await _saveProgress(generatedResults);
-          print('   💾 Saved progress to JSON ($successCount/$total)');
+          successCount++;
+          print('   ✅ Saved URL to JSON');
         } else {
           failedCount++;
-          print('   ❌ Generation failed for: $title');
+          print('   ❌ Failed: Empty URL');
         }
 
-        // Delay to avoid rate limits and cool down
         await Future.delayed(Duration(seconds: DELAY_SECONDS));
-
       } catch (e) {
         failedCount++;
-        print('   ❌ Process Error: $e');
-        await Future.delayed(Duration(seconds: 10)); // Extra cooldown on error
+        print('   ❌ Error: $e');
       }
     }
 
-    print('\n\n═══════════════════════════════════════════════════════════');
-    print('🎉 BATCH GENERATION COMPLETE!');
-    print('═══════════════════════════════════════════════════════════');
-    print('✅ Total Successful: $successCount');
-    print('❌ Failed this run: $failedCount');
-    print('💾 Data saved to: generated_images.json');
+    print('\n═══════════════════════════════════════════════════════════');
+    print('🏁 FINISHED');
+    print('   ✅ Newly Generated: $successCount');
+    print('   ⏩ Already Existed:  $skippedCount');
+    print('   ❌ Failed:           $failedCount');
     print('═══════════════════════════════════════════════════════════\n');
   }
 
-  /// Load existing progress from JSON file as a Map
   Future<Map<String, dynamic>> _loadExistingProgress() async {
     try {
-      final file = File('generated_images.json');
+      final file = File('assets/generated_images.json'); // Pointing to correct asset path
       if (await file.exists()) {
         final content = await file.readAsString();
-        if (content.isNotEmpty) {
-          final decoded = jsonDecode(content);
-          if (decoded is Map) {
-            return Map<String, dynamic>.from(decoded);
-          } else if (decoded is List) {
-            // Migration: Convert old List format to Map format
-            Map<String, dynamic> converted = {};
-            for (var item in decoded) {
-              if (item is Map && item.containsKey('title')) {
-                converted[item['title']] = item;
-              }
-            }
-            return converted;
-          }
-        }
+        return Map<String, dynamic>.from(jsonDecode(content));
       }
-    } catch (e) {
-      print('⚠️ Could not load existing progress: $e');
-    }
+    } catch (_) {}
     return {};
   }
 
-  /// Save progress to JSON file
   Future<void> _saveProgress(Map<String, dynamic> data) async {
-    try {
-      final file = File('generated_images.json');
-      await file.writeAsString(
-        JsonEncoder.withIndent('  ').convert(data),
-      );
-    } catch (e) {
-      print('Error saving progress: $e');
-    }
+    final file = File('assets/generated_images.json');
+    await file.writeAsString(JsonEncoder.withIndent('  ').convert(data));
   }
 
-  /// Get all prompts from all remaining categories
   List<Map<String, dynamic>> _getAllPrompts() {
     List<Map<String, dynamic>> all = [];
-
-    // 1. Portrait & Headshots
+    
     all.addAll(_extractPrompts('Portrait & Headshots', {
       'LinkedIn Professional': PortraitHeadshotsPrompts.getPrompts('LinkedIn Professional'),
       'Dating Profile': PortraitHeadshotsPrompts.getPrompts('Dating Profile'),
@@ -182,7 +129,6 @@ class BatchImageGenerator {
       'Student Graduate': PortraitHeadshotsPrompts.getPrompts('Student Graduate'),
     }));
 
-    // 2. Couple & Romance
     all.addAll(_extractPrompts('Couple & Romance', {
       'Valentine Special': CoupleRomancePrompts.getPrompts('Valentine Special'),
       'Engagement Proposal': CoupleRomancePrompts.getPrompts('Engagement Proposal'),
@@ -192,7 +138,6 @@ class BatchImageGenerator {
       'Romantic Scenes': CoupleRomancePrompts.getPrompts('Romantic Scenes'),
     }));
 
-    // 3. Wedding & Marriage
     all.addAll(_extractPrompts('Wedding & Marriage', {
       'Bridal Portraits': WeddingMarriagePrompts.getPrompts('Bridal Portraits'),
       'Groom Portraits': WeddingMarriagePrompts.getPrompts('Groom Portraits'),
@@ -202,7 +147,6 @@ class BatchImageGenerator {
       'Reception Party': WeddingMarriagePrompts.getPrompts('Reception Party'),
     }));
 
-    // 4. Family & Kids
     all.addAll(_extractPrompts('Family & Kids', {
       'Family Portrait': FamilyKidsPrompts.getPrompts('Family Portrait'),
       'Baby Newborn': FamilyKidsPrompts.getPrompts('Baby Newborn'),
@@ -212,7 +156,6 @@ class BatchImageGenerator {
       'Siblings': FamilyKidsPrompts.getPrompts('Siblings'),
     }));
 
-    // 5. Festivals & Occasions
     all.addAll(_extractPrompts('Festivals & Occasions', {
       'Diwali': FestivalsOccasionsPrompts.getPrompts('Diwali'),
       'Holi': FestivalsOccasionsPrompts.getPrompts('Holi'),
@@ -222,7 +165,6 @@ class BatchImageGenerator {
       'Independence Day': FestivalsOccasionsPrompts.getPrompts('Independence Day'),
     }));
 
-    // 6. Business & Marketing
     all.addAll(_extractPrompts('Business & Marketing', {
       'Logo Design': BusinessMarketingPrompts.getPrompts('Logo Design'),
       'Business Poster': BusinessMarketingPrompts.getPrompts('Business Poster'),
@@ -232,7 +174,6 @@ class BatchImageGenerator {
       'Team Photos': BusinessMarketingPrompts.getPrompts('Team Photos'),
     }));
 
-    // 7. Product & E-commerce
     all.addAll(_extractPrompts('Product & E-commerce', {
       'Electronics Gadgets': ProductEcommercePrompts.getPrompts('Electronics Gadgets'),
       'Fashion Apparel': ProductEcommercePrompts.getPrompts('Fashion Apparel'),
@@ -242,7 +183,6 @@ class BatchImageGenerator {
       'Packaging Design': ProductEcommercePrompts.getPrompts('Packaging Design'),
     }));
 
-    // 8. Art Styles
     all.addAll(_extractPrompts('Art Styles', {
       'Photorealistic': ArtStylesPrompts.getPrompts('Photorealistic'),
       'Anime Manga': ArtStylesPrompts.getPrompts('Anime Manga'),
@@ -252,7 +192,6 @@ class BatchImageGenerator {
       'Pixel Art': ArtStylesPrompts.getPrompts('Pixel Art'),
     }));
 
-    // 9. Nature & Landscapes
     all.addAll(_extractPrompts('Nature & Landscapes', {
       'Mountains': NatureLandscapesPrompts.getPrompts('Mountains'),
       'Beach Ocean': NatureLandscapesPrompts.getPrompts('Beach Ocean'),
@@ -262,7 +201,6 @@ class BatchImageGenerator {
       'Night Sky Stars': NatureLandscapesPrompts.getPrompts('Night Sky Stars'),
     }));
 
-    // 10. Animals & Pets
     all.addAll(_extractPrompts('Animals & Pets', {
       'Dogs Puppies': AnimalsPetsPrompts.getPrompts('Dogs Puppies'),
       'Cats Kittens': AnimalsPetsPrompts.getPrompts('Cats Kittens'),
@@ -272,7 +210,6 @@ class BatchImageGenerator {
       'Cute Animals': AnimalsPetsPrompts.getPrompts('Cute Animals'),
     }));
 
-    // 11. Food & Restaurant
     all.addAll(_extractPrompts('Food & Restaurant', {
       'Indian Cuisine': FoodRestaurantPrompts.getPrompts('Indian Cuisine'),
       'Fast Food': FoodRestaurantPrompts.getPrompts('Fast Food'),
@@ -282,7 +219,6 @@ class BatchImageGenerator {
       'Chef Cooking': FoodRestaurantPrompts.getPrompts('Chef Cooking'),
     }));
 
-    // 12. Fashion & Lifestyle
     all.addAll(_extractPrompts('Fashion & Lifestyle', {
       'High Fashion': FashionLifestylePrompts.getPrompts('High Fashion'),
       'Street Style': FashionLifestylePrompts.getPrompts('Street Style'),
@@ -292,7 +228,6 @@ class BatchImageGenerator {
       'Accessories': FashionLifestylePrompts.getPrompts('Accessories'),
     }));
 
-    // 13. Vehicles & Travel
     all.addAll(_extractPrompts('Vehicles & Travel', {
       'Sports Cars': VehiclesTravelPrompts.getPrompts('Sports Cars'),
       'Motorcycles': VehiclesTravelPrompts.getPrompts('Motorcycles'),
@@ -302,7 +237,6 @@ class BatchImageGenerator {
       'Hotels Resorts': VehiclesTravelPrompts.getPrompts('Hotels Resorts'),
     }));
 
-    // 14. Social Media
     all.addAll(_extractPrompts('Social Media', {
       'Instagram Post': SocialMediaPrompts.getPrompts('Instagram Post'),
       'YouTube Thumbnail': SocialMediaPrompts.getPrompts('YouTube Thumbnail'),
@@ -312,7 +246,6 @@ class BatchImageGenerator {
       'Meme Templates': SocialMediaPrompts.getPrompts('Meme Templates'),
     }));
 
-    // 15. Photo Enhancement
     all.addAll(_extractPrompts('Photo Enhancement', {
       'Upscale HD': PhotoEnhancementPrompts.getPrompts('Upscale HD'),
       'Old Photo Restore': PhotoEnhancementPrompts.getPrompts('Old Photo Restore'),
@@ -322,7 +255,6 @@ class BatchImageGenerator {
       'Style Transfer': PhotoEnhancementPrompts.getPrompts('Style Transfer'),
     }));
 
-    // 16. AI Tools & Platforms
     all.addAll(_extractPrompts('AI Tools & Platforms', {
       'Midjourney': AIToolsPlatformsPrompts.getPrompts('Midjourney'),
       'DALL-E 3': AIToolsPlatformsPrompts.getPrompts('DALL-E 3'),
@@ -332,35 +264,44 @@ class BatchImageGenerator {
       'Flux Ideogram': AIToolsPlatformsPrompts.getPrompts('Flux Ideogram'),
     }));
 
+    all.addAll(_extractPrompts('Gaming & Esports', {
+      'Cyberpunk Hero': GamingEsportsPrompts.getPrompts('Cyberpunk Hero'),
+      'Fantasy Warrior': GamingEsportsPrompts.getPrompts('Fantasy Warrior'),
+      'Esports Streamer': GamingEsportsPrompts.getPrompts('Esports Streamer'),
+      'GTA Style Avatar': GamingEsportsPrompts.getPrompts('GTA Style Avatar'),
+      '3D Game Character': GamingEsportsPrompts.getPrompts('3D Game Character'),
+      'Superhero Suit': GamingEsportsPrompts.getPrompts('Superhero Suit'),
+    }));
+
+    all.addAll(_extractPrompts('Architecture & Interiors', {
+      'Luxury Penthouse': ArchitectureInteriorsPrompts.getPrompts('Luxury Penthouse'),
+      'Executive Office': ArchitectureInteriorsPrompts.getPrompts('Executive Office'),
+      'Dream Home Life': ArchitectureInteriorsPrompts.getPrompts('Dream Home Life'),
+      'Vintage Royal Hall': ArchitectureInteriorsPrompts.getPrompts('Vintage Royal Hall'),
+      'Creative Studio': ArchitectureInteriorsPrompts.getPrompts('Creative Studio'),
+      'Outdoor Balcony': ArchitectureInteriorsPrompts.getPrompts('Outdoor Balcony'),
+    }));
+
     return all;
   }
 
-  /// Helper to extract prompts from subcategory map
-  List<Map<String, dynamic>> _extractPrompts(
-      String categoryName,
-      Map<String, dynamic> subcategoryMap,
-      ) {
-    List<Map<String, dynamic>> extracted = [];
-
-    subcategoryMap.forEach((subcategoryName, prompts) {
+  List<Map<String, dynamic>> _extractPrompts(String categoryName, Map<String, dynamic> subMap) {
+    List<Map<String, dynamic>> list = [];
+    subMap.forEach((subName, prompts) {
       if (prompts is List) {
         for (var p in prompts) {
-          if (p is Map) {
-            extracted.add({
-              'title': p['title']?.toString() ?? '',
-              'text': p['text'] ?? '',
-              'description': p['description'] ?? '',
-              'platform': p['platform'] ?? '',
-              'category': categoryName,
-              'subcategory': subcategoryName,
-              'isFeatured': p['isFeatured']?.toString() ?? 'false',
-              'isVideo': p['isVideo'] ?? false,
-            });
-          }
+          list.add({
+            ...Map<String, dynamic>.from(p),
+            'category': categoryName,
+            'subcategory': subName,
+          });
         }
       }
     });
-
-    return extracted;
+    return list;
   }
+}
+
+void main() async {
+  await BatchImageGenerator().generateAllImages();
 }

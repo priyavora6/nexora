@@ -52,6 +52,31 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateUserProfile({required String name}) async {
+    if (_auth.currentUser == null) return false;
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
+        'name': name,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      // Also update Firebase Auth display name for consistency
+      await _auth.currentUser?.updateDisplayName(name);
+      
+      _user = _user?.copyWith(name: name, updatedAt: DateTime.now());
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<bool> updateUserInterests(List<String> interestIds) async {
     if (_auth.currentUser == null) return false;
     _isLoading = true;
@@ -84,6 +109,8 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final cred = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      await cred.user?.updateDisplayName(name);
+
       final newUser = newUserModel(
         uid: cred.user!.uid,
         email: email,

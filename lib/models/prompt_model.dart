@@ -15,7 +15,6 @@ class PromptModel {
   final bool hasExample;
   final String exampleType; 
   final String? exampleImageUrl;
-  final String? exampleVideoUrl; 
   final String? thumbnailUrl;
   final String platformKey; 
   final String platformUrl; 
@@ -37,7 +36,6 @@ class PromptModel {
     this.hasExample = false,
     this.exampleType = 'none',
     this.exampleImageUrl,
-    this.exampleVideoUrl,
     this.thumbnailUrl,
     this.platformKey = '',
     this.platformUrl = '',
@@ -61,7 +59,6 @@ class PromptModel {
       hasExample: data['hasExample'] ?? false,
       exampleType: data['exampleType'] ?? 'none',
       exampleImageUrl: data['exampleImageUrl'],
-      exampleVideoUrl: data['exampleVideoUrl'],
       thumbnailUrl: data['thumbnailUrl'],
       platformKey: data['platformKey'] ?? '',
       platformUrl: data['platformUrl'] ?? '',
@@ -89,7 +86,6 @@ class PromptModel {
       'hasExample': hasExample,
       'exampleType': exampleType,
       'exampleImageUrl': exampleImageUrl,
-      'exampleVideoUrl': exampleVideoUrl,
       'thumbnailUrl': thumbnailUrl,
       'platformKey': platformKey,
       'platformUrl': platformUrl,
@@ -112,7 +108,6 @@ class PromptModel {
     bool? hasExample,
     String? exampleType,
     String? exampleImageUrl,
-    String? exampleVideoUrl,
     String? thumbnailUrl,
     String? platformKey,
     String? platformUrl,
@@ -134,7 +129,6 @@ class PromptModel {
       hasExample: hasExample ?? this.hasExample,
       exampleType: exampleType ?? this.exampleType,
       exampleImageUrl: exampleImageUrl ?? this.exampleImageUrl,
-      exampleVideoUrl: exampleVideoUrl ?? this.exampleVideoUrl,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       platformKey: platformKey ?? this.platformKey,
       platformUrl: platformUrl ?? this.platformUrl,
@@ -145,6 +139,5 @@ class PromptModel {
   }
 
   bool get hasImageExample => hasExample && exampleType == 'image' && exampleImageUrl != null;
-  bool get hasVideoExample => hasExample && exampleType == 'video' && exampleVideoUrl != null;
   String? get displayThumbnail => thumbnailUrl ?? exampleImageUrl;
 }

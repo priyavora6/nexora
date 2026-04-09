@@ -1,7 +1,7 @@
 // lib/services/seed/seed_data_service.dart
 
 import 'dart:convert';
-import 'package:flutter/services.dart'; // 🔥 REQUIRED for rootBundle
+import 'package:flutter/services.dart'; 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'category_data.dart';
 import 'subcategory_data.dart';
@@ -21,18 +21,18 @@ import 'prompts/vehicles_travel_prompts.dart';
 import 'prompts/social_media_prompts.dart';
 import 'prompts/photo_enhancement_prompts.dart';
 import 'prompts/ai_tools_platforms_prompts.dart';
+import 'prompts/gaming_esports_prompts.dart';
+import 'prompts/architecture_interiors_prompts.dart';
 
 class SeedDataService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   
-  // 💾 Maps to store only your Cloudinary URLs
   final Map<String, String> _generatedImageMap = {};
   final Map<String, String> _generatedVideoMap = {};
 
   String _normalize(String text) => text.trim().toLowerCase();
 
   Future<void> seedAllData({required Function(String) onProgress}) async {
-    // 1. Load your Cloudinary links from Assets
     onProgress('📥 Loading Cloudinary links from Assets...');
     await _loadGeneratedMedia();
 
@@ -81,11 +81,9 @@ class SeedDataService {
           final String title = p['title']?.toString() ?? '';
           final String normalizedTitle = _normalize(title);
           
-          // 1. Get the URL from your JSON
           String cloudImageUrl = _generatedImageMap[normalizedTitle] ?? '';
           String cloudVideoUrl = _generatedVideoMap[normalizedTitle] ?? '';
           
-          // 2. Determine the type for your Model
           String exampleType = 'none';
           if (cloudVideoUrl.isNotEmpty) {
             exampleType = 'video';
@@ -96,7 +94,6 @@ class SeedDataService {
           if (cloudImageUrl.isNotEmpty || cloudVideoUrl.isNotEmpty) linkedCount++;
           onProgress('   📝 Seeding: $title');
 
-          // 3. Map everything to the exact fields in your PromptModel
           await _db.collection('prompts').add({
             'title': title,
             'text': p['text'],
@@ -107,14 +104,11 @@ class SeedDataService {
             'categoryName': catName,
             'subcategoryName': subName,
             'createdAt': FieldValue.serverTimestamp(),
-            
-            // Mapping fields
             'hasExample': cloudImageUrl.isNotEmpty || cloudVideoUrl.isNotEmpty,
             'exampleType': exampleType,
             'exampleImageUrl': cloudImageUrl, 
             'exampleVideoUrl': cloudVideoUrl, 
             'thumbnailUrl': cloudImageUrl,    
-            
             'platformKey': _getPlatformKey(p['platform']?.toString() ?? 'Other'),
             'platformUrl': _getPlatformUrl(p['platform']?.toString() ?? 'Other'),
             'isFeatured': p['isFeatured']?.toString() == 'true',
@@ -151,21 +145,6 @@ class SeedDataService {
           if (videoUrl.isNotEmpty) _generatedVideoMap[titleKey] = videoUrl;
         }
       });
-      
-      try {
-        final String videoContents = await rootBundle.loadString('assets/generated_videos.json');
-        final dynamic decodedVideos = jsonDecode(videoContents);
-        final Map<String, dynamic> videoData = _convertToMap(decodedVideos);
-
-        videoData.forEach((key, item) {
-          String titleKey = _normalize(item['title'] ?? '');
-          String url = item['videoUrl'] ?? item['cloudinaryUrl'] ?? '';
-          
-          if (titleKey.isNotEmpty && url.isNotEmpty) {
-            _generatedVideoMap[titleKey] = url;
-          }
-        });
-      } catch (e) {}
       
     } catch (e) {}
   }
@@ -229,6 +208,10 @@ class SeedDataService {
         return PhotoEnhancementPrompts.getPrompts(subcategory).map((e) => Map<String, dynamic>.from(e)).toList();
       case 'AI Tools & Platforms':
         return AIToolsPlatformsPrompts.getPrompts(subcategory).map((e) => Map<String, dynamic>.from(e)).toList();
+      case 'Gaming & Esports':
+        return GamingEsportsPrompts.getPrompts(subcategory).map((e) => Map<String, dynamic>.from(e)).toList();
+      case 'Architecture & Interiors':
+        return ArchitectureInteriorsPrompts.getPrompts(subcategory).map((e) => Map<String, dynamic>.from(e)).toList();
       default:
         return [];
     }

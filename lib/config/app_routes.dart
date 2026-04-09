@@ -21,6 +21,7 @@ import '../screens/settings/about_app_screen.dart';
 import '../screens/settings/developer_info_screen.dart';
 import '../screens/settings/change_password_screen.dart';
 import '../screens/settings/how_to_use_screen.dart';
+import '../screens/settings/edit_profile_screen.dart';
 import '../widgets/common/webview_screen.dart';
 
 import '../screens/admin/admin_dashboard_screen.dart';
@@ -57,6 +58,7 @@ class AppRoutes {
   static const String aboutApp         = '/about-app';
   static const String developerInfo    = '/developer-info';
   static const String changePassword   = '/change-password';
+  static const String editProfile      = '/edit-profile';
   static const String howToUse         = '/how-to-use';
 
   static const String adminDash        = '/admin-dashboard';
@@ -96,7 +98,7 @@ class AppRoutes {
       case categories:
         return _noAnimation(CategoriesScreen());
       case search:
-        return _noAnimation(SearchScreen());
+        return _noAnimation(const SearchScreen());
       case favorites:
         return _noAnimation(FavoritesScreen());
       case AppRoutes.settings:
@@ -141,6 +143,8 @@ class AppRoutes {
         return _slide(const DeveloperInfoScreen());
       case changePassword:
         return _slide(const ChangePasswordScreen());
+      case editProfile:
+        return _slide(const EditProfileScreen());
       case howToUse:
         return _slide(const HowToUseScreen());
 

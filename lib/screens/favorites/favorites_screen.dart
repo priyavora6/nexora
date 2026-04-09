@@ -21,13 +21,7 @@ class FavoritesScreen extends StatefulWidget {
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
   List<PromptModel>? _prompts;
-  List<PromptModel>? _filteredPrompts;
   bool _isLoading = true;
-
-  String? _selectedPlatform;
-  bool _hasExamplesOnly = false;
-  SortOption _sortOption = SortOption.dateAdded;
-  bool _showFilters = false;
 
   @override
   void initState() {
@@ -42,7 +36,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     if (favIds.isEmpty) {
       setState(() {
         _prompts = [];
-        _filteredPrompts = [];
         _isLoading = false;
       });
       return;
@@ -58,45 +51,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     if (mounted) {
       setState(() {
         _prompts = prompts;
-        _filteredPrompts = prompts;
         _isLoading = false;
       });
-      _applyFiltersAndSort();
     }
   }
-
-  void _applyFiltersAndSort() {
-    if (_prompts == null) return;
-    List<PromptModel> filtered = List.from(_prompts!);
-    if (_selectedPlatform != null) filtered = filtered.where((p) => p.platformKey == _selectedPlatform).toList();
-    if (_hasExamplesOnly) filtered = filtered.where((p) => p.hasExample).toList();
-
-    switch (_sortOption) {
-      case SortOption.featuredFirst:
-        filtered.sort((a, b) => (b.isFeatured ? 1 : 0).compareTo(a.isFeatured ? 1 : 0));
-        break;
-      case SortOption.alphabetical:
-        filtered.sort((a, b) => a.title.compareTo(b.title));
-        break;
-      default: break;
-    }
-
-    setState(() => _filteredPrompts = filtered);
-  }
-
-  void _clearFilters() {
-    setState(() {
-      _selectedPlatform = null;
-      _hasExamplesOnly = false;
-      _sortOption = SortOption.dateAdded;
-    });
-    _applyFiltersAndSort();
-  }
-
-  bool get _hasActiveFilters => _selectedPlatform != null || _hasExamplesOnly || _sortOption != SortOption.dateAdded;
 
   void _goToHome(BuildContext context) {
     Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+  }
+
+  void _goToCategories(BuildContext context) {
+    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.categories, (route) => false);
   }
 
   @override
@@ -112,7 +77,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       },
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: const GradientAppBar(title: 'SAVED', showBack: true),
+        appBar: GradientAppBar(
+          title: 'SAVED',
+          showBack: true,
+          onBackPressed: () => _goToHome(context),
+        ),
         bottomNavigationBar: const BottomNavBar(currentIndex: 3),
         body: NexoraBackground(
           particleCount: 15,
@@ -127,57 +96,39 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   Widget _buildSavedList(PromptProvider prov, ThemeData theme) {
-    final prompts = _filteredPrompts ?? [];
+    final prompts = _prompts ?? [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${_prompts?.length ?? 0} ITEMS SAVED', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, letterSpacing: -0.5)),
+                    Text('${prompts.length} ITEMS SAVED', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, letterSpacing: -0.5)),
                     Text('YOUR CURATED COLLECTION', style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w800, color: AppColors.royalBlue, fontSize: 10, letterSpacing: 1)),
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: () => setState(() => _showFilters = !_showFilters),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: _hasActiveFilters ? AppColors.royalBlue.withOpacity(0.1) : AppColors.lightInput,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _hasActiveFilters ? AppColors.royalBlue : Colors.transparent),
-                  ),
-                  child: Icon(Icons.tune_rounded, size: 20, color: _hasActiveFilters ? AppColors.royalBlue : Colors.grey),
-                ),
-              ),
               const SizedBox(width: 12),
-              TextButton(onPressed: () => _showClearAllDialog(context, prov), child: const Text('CLEAR', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w900, fontSize: 11))),
+              TextButton(
+                onPressed: () => _showClearAllDialog(context, prov), 
+                child: const Text('CLEAR', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w900, fontSize: 11))
+              ),
             ],
           ),
         ),
 
-        AnimatedCrossFade(
-          duration: const Duration(milliseconds: 200),
-          crossFadeState: _showFilters ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-          firstChild: _buildFiltersSection(theme),
-          secondChild: const SizedBox(height: 16),
-        ),
-
         Expanded(
-          child: prompts.isEmpty
-              ? Center(child: Text('NO MATCHING PROMPTS', style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w800)))
-              : ListView.separated(
+          child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
             itemCount: prompts.length,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemBuilder: (_, i) {
+            itemBuilder: (context, i) {
               final p = prompts[i];
               return Dismissible(
                 key: Key(p.id),
@@ -188,38 +139,19 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   decoration: BoxDecoration(color: AppColors.error.withOpacity(0.1), borderRadius: BorderRadius.circular(24)),
                   child: const Icon(Icons.bookmark_remove_rounded, color: AppColors.error, size: 28),
                 ),
-                onDismissed: (_) { prov.toggleFavorite(p.id); setState(() { _prompts!.removeWhere((pr) => pr.id == p.id); _filteredPrompts!.removeAt(i); }); },
-                child: PromptCard(prompt: p, onTap: () => Navigator.pushNamed(context, AppRoutes.promptDetail, arguments: {'promptId': p.id})),
+                onDismissed: (_) { 
+                  prov.toggleFavorite(p.id); 
+                  setState(() { _prompts!.removeWhere((pr) => pr.id == p.id); }); 
+                },
+                child: PromptCard(
+                  prompt: p, 
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.promptDetail, arguments: {'promptId': p.id, 'prompt': p})
+                ),
               );
             },
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildFiltersSection(ThemeData theme) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: theme.cardColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: AppColors.border.withOpacity(0.5))),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('FILTER & SORT', style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w900)),
-              if (_hasActiveFilters) TextButton(onPressed: _clearFilters, child: const Text('RESET', style: TextStyle(color: AppColors.royalBlue, fontSize: 11, fontWeight: FontWeight.w900))),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(onPressed: () => setState(() => _showFilters = false), child: const Text('APPLY')),
-          ),
-        ],
-      ),
     );
   }
 
@@ -245,7 +177,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: ElevatedButton(
-                  onPressed: () => _goToHome(context),
+                  onPressed: () => _goToCategories(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,
@@ -269,10 +201,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       content: Text('Delete all saved items?', style: theme.textTheme.bodyMedium),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL', style: TextStyle(fontWeight: FontWeight.w800))),
-        TextButton(onPressed: () { prov.clearFavorites(); setState(() { _prompts = []; _filteredPrompts = []; }); Navigator.pop(context); }, child: const Text('CLEAR ALL', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w800))),
+        TextButton(onPressed: () { prov.clearFavorites(); setState(() { _prompts = []; }); Navigator.pop(context); }, child: const Text('CLEAR ALL', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w800))),
       ],
     ));
   }
 }
-
-enum SortOption { dateAdded, featuredFirst, alphabetical }

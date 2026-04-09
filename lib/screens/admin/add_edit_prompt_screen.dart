@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../config/app_colors.dart';
 import '../../config/app_constants.dart';
@@ -30,7 +31,6 @@ class _AddEditPromptScreenState extends State<AddEditPromptScreen> {
   final _titleCtrl = TextEditingController();
   final _textCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
-  final _videoUrlCtrl = TextEditingController();
 
   String? _selectedCategoryId;
   String? _selectedCategoryName;
@@ -40,7 +40,6 @@ class _AddEditPromptScreenState extends State<AddEditPromptScreen> {
   
   // Example specific states
   bool _hasExample = false;
-  String _exampleType = 'none'; // 'image', 'video', 'none'
   String? _existingImageUrl;
   File? _selectedImage;
   bool _isFeatured = false;
@@ -68,9 +67,7 @@ class _AddEditPromptScreenState extends State<AddEditPromptScreen> {
       _selectedPlatform = p.platform;
       
       _hasExample = p.hasExample;
-      _exampleType = p.exampleType;
       _existingImageUrl = p.exampleImageUrl;
-      _videoUrlCtrl.text = p.exampleVideoUrl ?? '';
       _isFeatured = p.isFeatured;
       
       _loadSubcategories(p.categoryId);
@@ -82,7 +79,6 @@ class _AddEditPromptScreenState extends State<AddEditPromptScreen> {
     _titleCtrl.dispose();
     _textCtrl.dispose();
     _descCtrl.dispose();
-    _videoUrlCtrl.dispose();
     super.dispose();
   }
 
@@ -94,7 +90,6 @@ class _AddEditPromptScreenState extends State<AddEditPromptScreen> {
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
-        _exampleType = 'image';
         _hasExample = true;
       });
     }
@@ -140,7 +135,7 @@ class _AddEditPromptScreenState extends State<AddEditPromptScreen> {
       String? thumbUrl;
 
       // Upload image to Cloudinary if a new one is selected
-      if (_selectedImage != null && _exampleType == 'image') {
+      if (_selectedImage != null) {
         final result = await _cloudinary.uploadImage(
           _selectedImage!,
           folder: 'nexora/prompts',
@@ -164,10 +159,9 @@ class _AddEditPromptScreenState extends State<AddEditPromptScreen> {
         'subcategoryName': _selectedSubcategoryName ?? '',
         'platform': _selectedPlatform,
         'hasExample': _hasExample,
-        'exampleType': _exampleType,
-        'exampleImageUrl': _exampleType == 'image' ? imageUrl : null,
-        'exampleVideoUrl': _exampleType == 'video' ? _videoUrlCtrl.text.trim() : null,
-        'thumbnailUrl': _exampleType == 'image' ? (thumbUrl ?? imageUrl) : null,
+        'exampleType': _hasExample ? 'image' : 'none',
+        'exampleImageUrl': imageUrl,
+        'thumbnailUrl': thumbUrl ?? imageUrl,
         'isFeatured': _isFeatured,
         'platformKey': _selectedPlatform.toLowerCase().replaceAll(' ', '_'),
         'platformUrl': _getPlatformUrl(_selectedPlatform),
@@ -307,40 +301,32 @@ class _AddEditPromptScreenState extends State<AddEditPromptScreen> {
                 onChanged: (v) => setState(() => _hasExample = v),
               ),
               if (_hasExample) ...[
-                Row(
-                  children: [
-                    _mediaTypeChip('Image', 'image'),
-                    const SizedBox(width: 12),
-                    _mediaTypeChip('Video', 'video'),
-                  ],
-                ),
                 const SizedBox(height: 16),
-                if (_exampleType == 'image') ...[
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Container(
-                      height: 150,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: AppColors.lightInput,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border.withOpacity(0.4)),
-                      ),
-                      child: _selectedImage != null
-                          ? ClipRRect(borderRadius: BorderRadius.circular(16), child: Image.file(_selectedImage!, fit: BoxFit.cover))
-                          : (_existingImageUrl != null
-                              ? ClipRRect(borderRadius: BorderRadius.circular(16), child: Image.network(_existingImageUrl!, fit: BoxFit.cover))
-                              : Column(mainAxisAlignment: MainAxisAlignment.center, children: const [Icon(Icons.add_a_photo_rounded, size: 40, color: AppColors.textHint), Text('Upload Example Image')])),
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.lightInput,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.border.withOpacity(0.4)),
                     ),
+                    child: _selectedImage != null
+                        ? ClipRRect(borderRadius: BorderRadius.circular(16), child: Image.file(_selectedImage!, fit: BoxFit.cover))
+                        : (_existingImageUrl != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: CachedNetworkImage(
+                                  imageUrl: _existingImageUrl!,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                                ),
+                              )
+                            : Column(mainAxisAlignment: MainAxisAlignment.center, children: const [Icon(Icons.add_a_photo_rounded, size: 40, color: AppColors.textHint), Text('Upload Example Image')])),
                   ),
-                ] else if (_exampleType == 'video') ...[
-                  CustomTextField(
-                    hint: 'Video URL (Direct link to .mp4 or similar)',
-                    label: 'Video URL',
-                    prefixIcon: Icons.play_circle_fill_rounded,
-                    controller: _videoUrlCtrl,
-                  ),
-                ],
+                ),
               ],
               const SizedBox(height: 24),
 
@@ -397,21 +383,6 @@ class _AddEditPromptScreenState extends State<AddEditPromptScreen> {
         border: Border.all(color: AppColors.border.withOpacity(0.4)),
       ),
       child: child,
-    );
-  }
-
-  Widget _mediaTypeChip(String label, String type) {
-    final isSelected = _exampleType == type;
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (val) => setState(() => _exampleType = type),
-      selectedColor: AppColors.royalBlue.withOpacity(0.2),
-      labelStyle: GoogleFonts.poppins(
-        fontSize: 12,
-        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-        color: isSelected ? AppColors.royalBlue : AppColors.textSecondary,
-      ),
     );
   }
 }

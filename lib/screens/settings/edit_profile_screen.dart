@@ -1,4 +1,4 @@
-// lib/screens/settings/change_password_screen.dart
+// lib/screens/settings/edit_profile_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,26 +10,17 @@ import '../../providers/auth_provider.dart';
 import '../../widgets/layout/gradient_app_bar.dart';
 import '../../widgets/common/nexora_background.dart';
 
-class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({Key? key}) : super(key: key);
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({Key? key}) : super(key: key);
 
   @override
-  State<ChangePasswordScreen> createState() =>
-      _ChangePasswordScreenState();
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _ChangePasswordScreenState extends State<ChangePasswordScreen>
+class _EditProfileScreenState extends State<EditProfileScreen>
     with SingleTickerProviderStateMixin {
-
   final _formKey = GlobalKey<FormState>();
-
-  final _currentPasswordController = TextEditingController();
-  final _newPasswordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-
-  bool _obscureCurrent = true;
-  bool _obscureNew = true;
-  bool _obscureConfirm = true;
+  late TextEditingController _nameController;
 
   late final AnimationController _controller = AnimationController(
     vsync: this,
@@ -44,28 +35,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
   @override
   void initState() {
     super.initState();
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    _nameController = TextEditingController(text: auth.userName);
     _controller.forward();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _currentPasswordController.dispose();
-    _newPasswordController.dispose();
-    _confirmPasswordController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleSubmit() async {
+  Future<void> _handleSave() async {
     if (!_formKey.currentState!.validate()) return;
 
     final auth = Provider.of<AuthProvider>(context, listen: false);
-
     HapticFeedback.mediumImpact();
 
-    final success = await auth.changePassword(
-      currentPassword: _currentPasswordController.text.trim(),
-      newPassword: _newPasswordController.text.trim(),
+    final success = await auth.updateUserProfile(
+      name: _nameController.text.trim(),
     );
 
     if (!mounted) return;
@@ -73,7 +62,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('✅ Password updated successfully!'),
+          content: Text('✅ Profile updated successfully!'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -81,7 +70,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(auth.error ?? '❌ Failed to update password'),
+          content: Text(auth.error ?? '❌ Failed to update profile'),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.redAccent,
         ),
@@ -89,7 +78,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
     }
   }
 
-  /// 🔥 Smooth stagger animation
   Widget _animatedItem({required Widget child, int delay = 0}) {
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 600 + delay),
@@ -112,11 +100,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: const GradientAppBar(
-        title: 'SECURITY',
+        title: 'EDIT PROFILE',
         showBack: true,
       ),
       body: NexoraBackground(
@@ -131,16 +120,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
-                  /// 🔥 HEADER
                   _animatedItem(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'CHANGE\nPASSWORD',
+                          'YOUR\nPROFILE',
                           style: GoogleFonts.inter(
-                            fontSize: 36, 
+                            fontSize: 36,
                             fontWeight: FontWeight.w900,
                             height: 1.1,
                             color: theme.textTheme.displayLarge?.color,
@@ -149,7 +136,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Keep your account secure with a strong password.',
+                          'Update your personal information below.',
                           style: GoogleFonts.inter(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -159,69 +146,30 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 48),
-
-                  /// 🔐 CURRENT PASSWORD
                   _animatedItem(
                     delay: 100,
-                    child: _buildPasswordField(
+                    child: _buildTextField(
                       context,
-                      controller: _currentPasswordController,
-                      label: 'CURRENT PASSWORD',
-                      obscure: _obscureCurrent,
-                      onToggle: () =>
-                          setState(() => _obscureCurrent = !_obscureCurrent),
+                      controller: _nameController,
+                      label: 'FULL NAME',
+                      hint: 'Enter your name',
+                      icon: Icons.person_outline_rounded,
                     ),
                   ),
-
                   const SizedBox(height: 30),
-
-                  /// 🔐 NEW PASSWORD
                   _animatedItem(
                     delay: 200,
-                    child: _buildPasswordField(
+                    child: _buildReadOnlyField(
                       context,
-                      controller: _newPasswordController,
-                      label: 'NEW PASSWORD',
-                      obscure: _obscureNew,
-                      onToggle: () =>
-                          setState(() => _obscureNew = !_obscureNew),
-                      validator: (val) {
-                        if (val == null || val.length < 6) {
-                          return 'Minimum 6 characters required';
-                        }
-                        return null;
-                      },
+                      label: 'EMAIL ADDRESS',
+                      value: auth.userEmail,
+                      icon: Icons.email_outlined,
                     ),
                   ),
-
-                  const SizedBox(height: 30),
-
-                  /// 🔐 CONFIRM PASSWORD
+                  const SizedBox(height: 60),
                   _animatedItem(
                     delay: 300,
-                    child: _buildPasswordField(
-                      context,
-                      controller: _confirmPasswordController,
-                      label: 'CONFIRM PASSWORD',
-                      obscure: _obscureConfirm,
-                      onToggle: () =>
-                          setState(() => _obscureConfirm = !_obscureConfirm),
-                      validator: (val) {
-                        if (val != _newPasswordController.text) {
-                          return 'Passwords do not match';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 60),
-
-                  /// 🚀 BUTTON
-                  _animatedItem(
-                    delay: 400,
                     child: Container(
                       width: double.infinity,
                       height: 64,
@@ -237,8 +185,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                         ],
                       ),
                       child: ElevatedButton(
-                        onPressed:
-                        auth.isLoading ? null : _handleSubmit,
+                        onPressed: auth.isLoading ? null : _handleSave,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
@@ -248,22 +195,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                         ),
                         child: auth.isLoading
                             ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
-                          ),
-                        )
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
                             : Text(
-                          'UPDATE PASSWORD',
-                          style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.5,
-                            color: Colors.white,
-                          ),
-                        ),
+                                'SAVE CHANGES',
+                                style: GoogleFonts.inter(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.5,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
                   ),
@@ -276,14 +223,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
     );
   }
 
-  /// 🔐 PASSWORD FIELD UI
-  Widget _buildPasswordField(
+  Widget _buildTextField(
     BuildContext context, {
     required TextEditingController controller,
     required String label,
-    required bool obscure,
-    required VoidCallback onToggle,
-    String? Function(String?)? validator,
+    required String hint,
+    required IconData icon,
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -317,33 +262,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
           ),
           child: TextFormField(
             controller: controller,
-            obscureText: obscure,
-            validator: validator ??
-                    (val) =>
-                val == null || val.isEmpty ? 'Required field' : null,
+            validator: (val) =>
+                val == null || val.isEmpty ? 'Name cannot be empty' : null,
             style: GoogleFonts.inter(
               fontWeight: FontWeight.w600,
               fontSize: 16,
               color: theme.textTheme.bodyLarge?.color,
             ),
             decoration: InputDecoration(
-              hintText: '••••••••',
-              hintStyle: TextStyle(color: theme.textTheme.bodyMedium?.color?.withOpacity(0.3), fontSize: 18),
-              suffixIcon: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: IconButton(
-                  icon: Icon(
-                    obscure
-                        ? Icons.visibility_off_outlined
-                        : Icons.visibility_outlined,
-                    size: 22,
-                    color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
-                  ),
-                  onPressed: onToggle,
-                ),
-              ),
+              hintText: hint,
+              hintStyle: TextStyle(color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5)),
+              prefixIcon: Icon(icon, size: 22, color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5)),
               contentPadding:
-              const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               filled: true,
               fillColor: theme.cardColor,
               border: OutlineInputBorder(
@@ -352,8 +283,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(24),
-                borderSide:
-                BorderSide(color: theme.dividerColor.withOpacity(isDark ? 0.1 : 0.5)),
+                borderSide: BorderSide(
+                    color: theme.dividerColor.withOpacity(isDark ? 0.1 : 0.5)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(24),
@@ -362,18 +293,60 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                   width: 2.0,
                 ),
               ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide:
-                const BorderSide(color: Colors.redAccent, width: 1.0),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide:
-                const BorderSide(color: Colors.redAccent, width: 2.0),
-              ),
-              errorStyle: const TextStyle(fontWeight: FontWeight.w600),
             ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReadOnlyField(
+    BuildContext context, {
+    required String label,
+    required String value,
+    required IconData icon,
+  }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8, bottom: 10),
+          child: Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: theme.textTheme.bodyMedium?.color,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          decoration: BoxDecoration(
+            color: isDark ? theme.colorScheme.surfaceVariant.withOpacity(0.3) : Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: theme.dividerColor.withOpacity(isDark ? 0.1 : 0.5)),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 22, color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5)),
+              const SizedBox(width: 12),
+              Text(
+                value,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
+                ),
+              ),
+              const Spacer(),
+              Icon(Icons.lock_outline_rounded, size: 16, color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4)),
+            ],
           ),
         ),
       ],

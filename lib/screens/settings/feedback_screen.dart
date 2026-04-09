@@ -41,8 +41,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       }
       _showSuccessToast("THANK YOU FOR THE ${_rating.toInt()}-STAR VIBE! 🚀");
     } else {
-      // 📝 Damage Control: Save internal feedback for unhappy users
-      // TODO: Add your Firestore logic here
       _showSuccessToast("FEEDBACK RECEIVED. WE WILL IMPROVE! 💪");
     }
 
@@ -65,6 +63,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -80,20 +79,20 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             Icon(
               widget.isRateUsMode ? Icons.stars_rounded : Icons.chat_bubble_outline_rounded,
               size: 80,
-              color: AppColors.royalBlue,
+              color: AppColors.primary,
             ),
             const SizedBox(height: 24),
             Text(
               widget.isRateUsMode ? "HOW'S YOUR EXPERIENCE?" : "SEND US YOUR THOUGHTS",
               textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900, letterSpacing: -0.5),
+              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900, letterSpacing: -0.5, color: theme.textTheme.displayLarge?.color),
             ),
             const SizedBox(height: 12),
             Text(
               "Your input helps us make Nexora better every day.",
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 48),
@@ -105,7 +104,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               direction: Axis.horizontal,
               allowHalfRating: true,
               itemCount: 5,
-              unratedColor: Colors.grey[200],
+              unratedColor: isDark ? Colors.grey[800] : Colors.grey[200],
               itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
               itemBuilder: (context, _) => const Icon(Icons.star_rounded, color: Colors.amber),
               onRatingUpdate: (rating) => setState(() => _rating = rating),
@@ -118,13 +117,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               TextField(
                 controller: _feedbackCtrl,
                 maxLines: 4,
-                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: theme.textTheme.bodyLarge?.color),
                 decoration: InputDecoration(
                   hintText: _rating >= 4 ? "WHAT DO YOU LOVE ABOUT NEXORA?" : "TELL US WHAT WE CAN IMPROVE...",
-                  hintStyle: const TextStyle(color: AppColors.textHint, fontSize: 11, fontWeight: FontWeight.w800),
+                  hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5), fontSize: 11, fontWeight: FontWeight.w800),
                   filled: true,
-                  fillColor: AppColors.lightInput,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+                  fillColor: theme.cardColor,
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: theme.dividerColor.withOpacity(0.1))),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
                   contentPadding: const EdgeInsets.all(20),
                 ),
               ),
@@ -137,8 +137,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               height: 56,
               child: Container(
                 decoration: BoxDecoration(
-                  gradient: _rating > 0 ? AppColors.buttonGradient : null,
-                  color: _rating > 0 ? null : Colors.grey[300],
+                  gradient: _rating > 0 ? AppColors.primaryGradient : null,
+                  color: _rating > 0 ? null : (isDark ? Colors.grey[900] : Colors.grey[300]),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: ElevatedButton(

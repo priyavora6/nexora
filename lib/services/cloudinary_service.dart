@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:crypto/crypto.dart';
 
 class CloudinaryService {
   // ═══════════════════════════════════════
@@ -8,11 +9,13 @@ class CloudinaryService {
   // ═══════════════════════════════════════
   static const String _cloudName = 'dli0cf2x3';
   static const String _uploadPreset = 'nexora_unsigned'; 
+  static const String _apiKey = '345465847414751';
+  static const String _apiSecret = 'vy2ZNy9aU3r8sCgfpO5yfiIvxAQ';
 
   CloudinaryService();
 
   // ═══════════════════════════════════════
-  // 📤 UPLOAD IMAGE (Pure Dart / No Flutter)
+  // 📤 UPLOAD IMAGE
   // ═══════════════════════════════════════
 
   Future<CloudinaryUploadResult> uploadImage(
@@ -123,8 +126,32 @@ class CloudinaryService {
   }
 
   Future<bool> deleteImage(String publicId) async {
-    print('⚠️ Delete image requested for: $publicId');
-    return true; 
+    if (publicId.isEmpty) return false;
+
+    try {
+      final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      final signatureString = 'public_id=$publicId&timestamp=$timestamp$_apiSecret';
+      final signature = sha1.convert(utf8.encode(signatureString)).toString();
+
+      final response = await http.post(
+        Uri.parse('https://api.cloudinary.com/v1_1/$_cloudName/image/destroy'),
+        body: {
+          'public_id': publicId,
+          'api_key': _apiKey,
+          'timestamp': timestamp.toString(),
+          'signature': signature,
+        },
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['result'] == 'ok';
+      }
+      return false;
+    } catch (e) {
+      print('❌ Cloudinary delete error: $e');
+      return false;
+    }
   }
 
   String? validateImageFile(File imageFile) {
@@ -144,7 +171,15 @@ class CloudinaryService {
       final pathSegments = uri.pathSegments;
       final uploadIndex = pathSegments.indexOf('upload');
       if (uploadIndex == -1) return null;
-      final publicIdSegments = pathSegments.skip(uploadIndex + 2);
+      
+      int startIndex = uploadIndex + 1;
+      if (startIndex < pathSegments.length &&
+          pathSegments[startIndex].startsWith('v') &&
+          int.tryParse(pathSegments[startIndex].substring(1)) != null) {
+        startIndex++;
+      }
+
+      final publicIdSegments = pathSegments.skip(startIndex);
       final publicIdWithExt = publicIdSegments.join('/');
       return publicIdWithExt.substring(0, publicIdWithExt.lastIndexOf('.'));
     } catch (e) {

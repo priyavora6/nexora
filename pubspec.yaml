@@ -30,22 +30,25 @@ dependencies:
   webview_flutter: ^4.9.0
   webview_flutter_android: ^3.12.0
   webview_flutter_wkwebview: ^3.9.2
-  
-  # Native Video Support
+
+  # Video
   video_player: ^2.8.1
   chewie: ^1.7.1
 
+  # Images
   cached_network_image: ^3.3.1
   photo_view: ^0.14.0
   carousel_slider: ^4.2.1
+
+  # UI Extras
   flutter_rating_bar: ^4.0.1
   in_app_review: ^2.0.9
 
-  # Image Upload & Selection
+  # Upload
   cloudinary_public: ^0.21.0
   image_picker: ^1.0.7
 
-  # Utilities
+  # Utils
   clipboard: ^0.1.3
   share_plus: ^7.2.1
   intl: ^0.19.0
@@ -53,7 +56,7 @@ dependencies:
   crypto: ^3.0.3
   flutter_cache_manager: ^3.3.1
   flutter_dotenv: ^5.1.0
-  path_provider: ^2.1.0
+  path_provider: ^2.1.4
 
 dev_dependencies:
   flutter_test:
@@ -61,20 +64,25 @@ dev_dependencies:
   flutter_lints: ^3.0.1
   flutter_launcher_icons: ^0.13.1
 
+# ✅ ICON CONFIG (FIXED)
 flutter_launcher_icons:
   android: true
-  ios: false 
-  image_path: "assets/icon.jpg"
-  adaptive_icon_background: "#E57F7A" 
-  adaptive_icon_foreground: "assets/icon.jpg"
+  ios: false
+
+  image_path: "assets/nexoralogo.png"
+
+  # Adaptive icon
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/nexoralogo.png"
 
 flutter:
   uses-material-design: true
-  assets:
 
-    - assets/icon.jpg
+  assets:
+    - assets/nexoralogo.png   # ✅ IMPORTANT (you missed this)
+    - assets/icon.png
     - assets/priya.jpg
     - assets/jigar.jpg
     - assets/mulogo.png
-    - .env
     - assets/generated_images.json
+    - .env

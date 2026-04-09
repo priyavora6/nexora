@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_routes.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/prompt_provider.dart';
+import '../../providers/theme_provider.dart';
 import '../../widgets/layout/bottom_nav_bar.dart';
 import '../../widgets/layout/gradient_app_bar.dart';
 
@@ -29,6 +29,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
     final bool isAdmin = auth.isAdmin;
     final theme = Theme.of(context);
 
@@ -39,10 +40,10 @@ class SettingsScreen extends StatelessWidget {
         _goToHome(context);
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FE), // Clean light background
-        appBar: const GradientAppBar(
+        appBar: GradientAppBar(
           title: 'SETTINGS',
           showBack: true,
+          onBackPressed: () => _goToHome(context),
         ),
         bottomNavigationBar: const BottomNavBar(currentIndex: 4),
         body: SafeArea(
@@ -61,6 +62,32 @@ class SettingsScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
+                      // DARK MODE TOGGLE
+                      _buildSettingTile(
+                        context,
+                        icon: themeProvider.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                        title: 'Dark Mode',
+                        trailingWidget: Switch.adaptive(
+                          value: themeProvider.isDarkMode,
+                          activeColor: const Color(0xFF6366F6),
+                          onChanged: (value) {
+                            themeProvider.toggleTheme(value);
+                          },
+                        ),
+                        onTap: () {
+                          themeProvider.toggleTheme(!themeProvider.isDarkMode);
+                        },
+                      ),
+                      const SizedBox(height: 12),
+
+                      _buildSettingTile(
+                        context,
+                        icon: Icons.person_outline_rounded,
+                        title: 'Edit Profile',
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
+                      ),
+                      const SizedBox(height: 12),
+
                       _buildSettingTile(
                         context,
                         icon: Icons.info_outline_rounded,
@@ -73,13 +100,13 @@ class SettingsScreen extends StatelessWidget {
                         context,
                         icon: Icons.chat_bubble_outline_rounded,
                         title: 'Feedback',
-                        onTap: _launchStore, // Directly launch Play Store
+                        onTap: _launchStore, 
                       ),
                       const SizedBox(height: 12),
 
                       _buildSettingTile(
                         context,
-                        icon: Icons.person_outline_rounded,
+                        icon: Icons.person_pin_outlined,
                         title: 'Contact Us',
                         onTap: () => Navigator.pushNamed(context, AppRoutes.contactUs),
                       ),
@@ -97,7 +124,7 @@ class SettingsScreen extends StatelessWidget {
                         context,
                         icon: Icons.star_border_rounded,
                         title: 'Rate App on Play Store',
-                        onTap: _launchStore, // Directly launch Play Store
+                        onTap: _launchStore, 
                       ),
                       const SizedBox(height: 12),
 
@@ -130,7 +157,7 @@ class SettingsScreen extends StatelessWidget {
                           context,
                           icon: Icons.admin_panel_settings_rounded,
                           title: 'Admin Dashboard',
-                          iconColor: AppColors.royalBlue,
+                          iconColor: const Color(0xFF6366F6),
                           onTap: () => Navigator.pushNamed(context, AppRoutes.adminDash),
                         ),
                         const SizedBox(height: 12),
@@ -152,8 +179,8 @@ class SettingsScreen extends StatelessWidget {
                         context,
                         icon: Icons.logout_rounded,
                         title: 'Sign Out',
-                        iconColor: AppColors.error,
-                        textColor: AppColors.error,
+                        iconColor: Colors.redAccent,
+                        textColor: Colors.redAccent,
                         showArrow: false,
                         onTap: () async {
                           await auth.signOut();
@@ -182,10 +209,14 @@ class SettingsScreen extends StatelessWidget {
           height: 90, width: 90,
           decoration: BoxDecoration(
             shape: BoxShape.circle, 
-            gradient: AppColors.navGradient, 
+            gradient: const LinearGradient(
+              colors: [Color(0xFF6366F6), Color(0xFF06B6D4)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ), 
             boxShadow: [
               BoxShadow(
-                color: AppColors.royalBlue.withOpacity(0.2), 
+                color: const Color(0xFF6366F6).withOpacity(0.2), 
                 blurRadius: 15, 
                 offset: const Offset(0, 5)
               )
@@ -201,11 +232,11 @@ class SettingsScreen extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           (isAdmin ? 'Administrator' : auth.userName), 
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)
+          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
         ),
         Text(
           auth.userEmail, 
-          style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)
+          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)
         ),
       ],
     );
@@ -217,6 +248,7 @@ class SettingsScreen extends StatelessWidget {
     required String title,
     required VoidCallback onTap,
     String? trailing,
+    Widget? trailingWidget,
     Color? textColor,
     Color? iconColor,
     bool showArrow = true,
@@ -228,8 +260,9 @@ class SettingsScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.02),
@@ -243,31 +276,33 @@ class SettingsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: (iconColor ?? const Color(0xFF6C63FF)).withOpacity(0.1),
+                color: (iconColor ?? const Color(0xFF6366F6)).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, color: iconColor ?? const Color(0xFF6C63FF), size: 20),
+              child: Icon(icon, color: iconColor ?? const Color(0xFF6366F6), size: 20),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 title,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: textColor ?? Colors.black87,
+                  color: textColor,
                 ),
               ),
             ),
-            if (trailing != null)
+            if (trailingWidget != null)
+              trailingWidget
+            else if (trailing != null)
               Text(
                 trailing,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[400],
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               )
             else if (showArrow)
-              Icon(Icons.chevron_right_rounded, color: Colors.grey[300], size: 20),
+              Icon(Icons.chevron_right_rounded, color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5), size: 20),
           ],
         ),
       ),

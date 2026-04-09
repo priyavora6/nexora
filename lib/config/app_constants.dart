@@ -5,7 +5,7 @@ class AppConstants {
   // 📱 APP INFO
   // ═══════════════════════════════════════
   static const String appName    = 'NEXORA';
-  static const String appTagline = 'NEXT-GEN CREATIVE PLATFORM';
+  static const String appTagline = 'Unlock Expert Prompts';
   static const String appVersion = '1.0.0';
 
   // ═══════════════════════════════════════
@@ -26,7 +26,7 @@ class AppConstants {
   // 🔐 ADMIN CREDENTIALS
   // ═══════════════════════════════════════
   static const String adminEmail    = 'admin@nexora.com';
-  static const String adminPassword = 'Nexora@Admin2024';
+  static const String adminPassword = 'Vault@Admin2024';
 
   // ═══════════════════════════════════════
   // 🤖 AI PLATFORMS

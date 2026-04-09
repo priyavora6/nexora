@@ -1,38 +1,44 @@
 import '../data/prompt_library.dart';
-import '../services/seed/category_data.dart';
-import '../services/seed/subcategory_data.dart';
+import 'dart:convert';
+import 'dart:io';
 
-void main() {
-  final categories = CategoryData.getAllCategories();
-  int totalExpected = 0;
-  int totalFound = 0;
+void main() async {
+  final allPrompts = PromptLibrary.getAllPrompts();
+  final jsonFile = File('generated_images.json');
+  final Map<String, dynamic> jsonData = jsonDecode(await jsonFile.readAsString());
 
-  print('📊 NEXORA LIBRARY AUDIT\n');
+  print('📊 NEXORA DUPLICATE AUDIT\n');
 
-  for (final cat in categories) {
-    final catName = cat['name']!;
-    final subs = SubcategoryData.getSubcategories(catName);
-    int catCount = 0;
+  final Set<String> uniqueTitles = {};
+  final List<String> duplicates = [];
 
-    print('📁 $catName:');
-    for (final sub in subs) {
-      final subName = sub['name']!;
-      final prompts = PromptLibrary.getAllPrompts()
-          .where((p) => p['category'] == catName && p['subcategory'] == subName)
-          .toList();
-      
-      print('   - $subName: ${prompts.length} prompts');
-      catCount += prompts.length;
-      totalFound += prompts.length;
-      totalExpected += 10;
+  for (var p in allPrompts) {
+    final title = p['title'];
+    if (uniqueTitles.contains(title)) {
+      duplicates.add(title);
+    } else {
+      uniqueTitles.add(title);
     }
-    print('   ✨ Total for $catName: $catCount/60\n');
   }
 
-  print('══════════════════════════════════════════════════');
-  print('📈 FINAL STATS');
-  print('   Found:    $totalFound');
-  print('   Expected: $totalExpected');
-  print('   Missing:  ${totalExpected - totalFound}');
-  print('══════════════════════════════════════════════════');
+  if (duplicates.isEmpty) {
+    print('✅ No duplicate titles found in Code.');
+  } else {
+    print('⚠️ DUPLICATE TITLES FOUND:');
+    for (var d in duplicates) {
+      print('   - "$d"');
+    }
+    print('\n💡 FIX: Go to the prompt file and give these a unique name.');
+  }
+
+  print('\n📈 SUMMARY:');
+  print('   - Total items in Code  : ${allPrompts.length}');
+  print('   - Unique titles in Code: ${uniqueTitles.length}');
+  print('   - Entries in JSON      : ${jsonData.length}');
+
+  if (uniqueTitles.length == jsonData.length && allPrompts.length == uniqueTitles.length) {
+    print('\n✅ STATUS: PERFECT SYNC!');
+  } else {
+    print('\n❌ STATUS: MISMATCH DETECTED.');
+  }
 }

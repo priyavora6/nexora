@@ -1,172 +1,38 @@
-// import 'package:flutter/material.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// import '../../config/app_colors.dart';
-// import '../../models/category_model.dart';
-// import '../../utils/helpers.dart';
-//
-// class CategoryTile extends StatelessWidget {
-//   final CategoryModel category;
-//   final VoidCallback onTap;
-//
-//   const CategoryTile({
-//     Key? key,
-//     required this.category,
-//     required this.onTap,
-//   }) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     // Get the specific color for this category
-//     final color = Helpers.hexToColor(category.color);
-//
-//     return GestureDetector(
-//       onTap: onTap,
-//       child: Container(
-//         padding: const EdgeInsets.all(16),
-//         decoration: BoxDecoration(
-//           color: Colors.white, // ✅ Clean white background
-//           borderRadius: BorderRadius.circular(20), // ✅ Softer rounded corners
-//           border: Border.all(
-//             color: color.withOpacity(0.2), // ✅ Soft tinted border
-//             width: 1.5,
-//           ),
-//           boxShadow: [
-//             BoxShadow(
-//               color: color.withOpacity(0.05), // ✅ Very subtle colored glow
-//               blurRadius: 15,
-//               offset: const Offset(0, 8),
-//             ),
-//           ],
-//         ),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             // ─── ICON CONTAINER ───
-//             Container(
-//               width: 55,
-//               height: 55,
-//               decoration: BoxDecoration(
-//                 color: color.withOpacity(0.1), // ✅ Soft tinted background
-//                 shape: BoxShape.circle,
-//               ),
-//               child: Center(
-//                 child: Text(
-//                   category.icon,
-//                   style: const TextStyle(fontSize: 28),
-//                 ),
-//               ),
-//             ),
-//
-//             const SizedBox(height: 16),
-//
-//             // ─── CATEGORY NAME ───
-//             Text(
-//               category.name,
-//               textAlign: TextAlign.center,
-//               maxLines: 1,
-//               overflow: TextOverflow.ellipsis,
-//               style: GoogleFonts.playfairDisplay( // ✅ Professional Serif Font
-//                 fontSize: 13,
-//                 fontWeight: FontWeight.w800,
-//                 color: AppColors.textPrimary, // Deep Smoky
-//               ),
-//             ),
-//
-//             const SizedBox(height: 6),
-//
-//             // ─── PROMPT COUNT ───
-//             Container(
-//               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-//               decoration: BoxDecoration(
-//                 color: AppColors.lightInput, // Very soft rose background
-//                 borderRadius: BorderRadius.circular(12),
-//               ),
-//               child: Text(
-//                 '${category.promptCount} items',
-//                 style: GoogleFonts.raleway( // ✅ Modern Sans Font
-//                   fontSize: 10,
-//                   fontWeight: FontWeight.w700,
-//                   color: AppColors.textSecondary, // Smoky Rose
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+import '../../models/category_model.dart';
 import '../../config/app_colors.dart';
-import '../../models/prompt_model.dart';
-import '../../providers/prompt_provider.dart';
 
-class PromptCard extends StatefulWidget {
-  final PromptModel prompt;
+class CategoryTile extends StatefulWidget {
+  final CategoryModel category;
   final VoidCallback onTap;
 
-  const PromptCard({Key? key, required this.prompt, required this.onTap})
-      : super(key: key);
+  const CategoryTile({
+    Key? key,
+    required this.category,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
-  State<PromptCard> createState() => _PromptCardState();
+  State<CategoryTile> createState() => _CategoryTileState();
 }
 
-class _PromptCardState extends State<PromptCard>
+class _CategoryTileState extends State<CategoryTile>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _scaleAnim;
+  late Animation<double> _scale;
 
   @override
   void initState() {
     super.initState();
-
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 120),
     );
-
-    _scaleAnim = Tween<double>(begin: 1.0, end: 0.97).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    _scale = Tween(begin: 1.0, end: 0.92).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
-
-  void _onTapDown(_) {
-    HapticFeedback.lightImpact();
-    _controller.forward();
-  }
-
-  void _onTapUp(_) {
-    _controller.reverse();
-    widget.onTap();
-  }
-
-  void _onTapCancel() => _controller.reverse();
 
   @override
   void dispose() {
@@ -174,260 +40,109 @@ class _PromptCardState extends State<PromptCard>
     super.dispose();
   }
 
+  void _onTapDown(TapDownDetails details) => _controller.forward();
+  void _onTapUp(TapUpDetails details) {
+    _controller.reverse();
+    widget.onTap();
+  }
+  void _onTapCancel() => _controller.reverse();
+
+  IconData _getCategoryIcon(String name) {
+    final n = name.toLowerCase();
+    
+    // People & Relationships
+    if (n.contains('portrait') || n.contains('headshot')) return Icons.person_rounded;
+    if (n.contains('couple') || n.contains('romance')) return Icons.favorite_rounded;
+    if (n.contains('family') || n.contains('kid')) return Icons.groups_rounded;
+    
+    // Lifestyle & Events
+    if (n.contains('festival') || n.contains('occasion')) return Icons.celebration_rounded;
+    if (n.contains('wedding')) return Icons.favorite_border_rounded; 
+    if (n.contains('food') || n.contains('restaurant')) return Icons.restaurant_rounded;
+    if (n.contains('fashion') || n.contains('lifestyle')) return Icons.checkroom_rounded;
+    
+    // Professional & Tech
+    if (n.contains('business') || n.contains('marketing')) return Icons.business_center_rounded;
+    if (n.contains('product') || n.contains('e-commerce')) return Icons.shopping_bag_rounded;
+    if (n.contains('ai tools') || n.contains('platform')) return Icons.psychology_rounded;
+    if (n.contains('gaming') || n.contains('esports')) return Icons.sports_esports_rounded;
+    if (n.contains('photo enhancement')) return Icons.auto_fix_high_rounded;
+    if (n.contains('social media')) return Icons.public_rounded;
+    
+    // Creative & Environment
+    if (n.contains('art') || n.contains('style')) return Icons.palette_rounded;
+    if (n.contains('nature') || n.contains('landscape')) return Icons.landscape_rounded;
+    if (n.contains('animal') || n.contains('pet')) return Icons.pets_rounded;
+    if (n.contains('architecture') || n.contains('interior')) return Icons.home_work_rounded;
+    if (n.contains('vehicle') || n.contains('travel')) return Icons.directions_car_rounded;
+    
+    return Icons.category_rounded;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final promptProv = Provider.of<PromptProvider>(context);
-    final isFav = promptProv.isFavorite(widget.prompt.id);
-    final hasImage =
-        widget.prompt.hasExample && widget.prompt.exampleImageUrl != null;
-
-    final color = AppColors.violet;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (_, child) => Transform.scale(
-          scale: _scaleAnim.value,
-          child: child,
-        ),
+      child: ScaleTransition(
+        scale: _scale,
         child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-
           decoration: BoxDecoration(
-            color: color.withOpacity(0.06),
-            borderRadius: BorderRadius.circular(20),
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: color.withOpacity(0.25),
-              width: 1.2,
+              color: theme.dividerColor.withOpacity(isDark ? 0.05 : 0.1),
+              width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.12),
-                blurRadius: 18,
+                color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+                blurRadius: 15,
                 offset: const Offset(0, 8),
-              ),
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 6,
-                offset: const Offset(0, 3),
               ),
             ],
           ),
-
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // 🔹 IMAGE
-                if (hasImage)
-                  SizedBox(
-                    width: 100,
-                    child: Image.network(
-                      widget.prompt.exampleImageUrl!,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-
-                // 🔹 CONTENT
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min, // ✅ FIX
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // TOP ROW
-                        Row(
-                          children: [
-                            if (widget.prompt.categoryName.isNotEmpty)
-                              Flexible(
-                                child: _CategoryChip(
-                                    label: widget.prompt.categoryName),
-                              ),
-                            const Spacer(),
-                            _BookmarkButton(
-                              isFav: isFav,
-                              onTap: () {
-                                HapticFeedback.selectionClick();
-                                promptProv
-                                    .toggleFavorite(widget.prompt.id);
-                              },
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        // TITLE
-                        Text(
-                          widget.prompt.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.playfairDisplay(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: color,
-                          ),
-                        ),
-
-                        const SizedBox(height: 3),
-
-                        // DESCRIPTION
-                        Text(
-                          widget.prompt.description,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        // BOTTOM ROW
-                        Row(
-                          children: [
-                            _UseButton(color: color),
-                            const Spacer(),
-                            if (widget.prompt.usageCount > 0)
-                              _MiniStat(
-                                icon: Icons.people_outline,
-                                label:
-                                _formatCount(widget.prompt.usageCount),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon Area
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(isDark ? 0.15 : 0.05),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _getCategoryIcon(widget.category.name),
+                  size: 32,
+                  color: isDark ? AppColors.primary : const Color(0xFF2D265B),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Text Area
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  widget.category.name.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 10,
+                    letterSpacing: 0.2,
+                    color: theme.textTheme.titleMedium?.color,
+                    height: 1.2,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      ),
-    );
-  }
-
-  String _formatCount(int n) {
-    if (n >= 1000) return '${(n / 1000).toStringAsFixed(1)}k';
-    return n.toString();
-  }
-}
-
-// CATEGORY CHIP
-class _CategoryChip extends StatelessWidget {
-  final String label;
-  const _CategoryChip({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = AppColors.violet;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label.toUpperCase(),
-        overflow: TextOverflow.ellipsis,
-        style: GoogleFonts.dmSans(
-          fontSize: 9,
-          fontWeight: FontWeight.w700,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
-// USE BUTTON
-class _UseButton extends StatelessWidget {
-  final Color color;
-  const _UseButton({required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.35),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.auto_awesome, size: 13, color: Colors.white),
-          const SizedBox(width: 5),
-          Text(
-            "Use",
-            style: GoogleFonts.dmSans(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// MINI STAT
-class _MiniStat extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _MiniStat({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 12, color: AppColors.textHint),
-        const SizedBox(width: 3),
-        Text(
-          label,
-          style: GoogleFonts.dmSans(
-            fontSize: 11,
-            color: AppColors.textHint,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// BOOKMARK BUTTON
-class _BookmarkButton extends StatelessWidget {
-  final bool isFav;
-  final VoidCallback onTap;
-
-  const _BookmarkButton({required this.isFav, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = AppColors.violet;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Icon(
-        isFav ? Icons.bookmark : Icons.bookmark_border,
-        size: 20,
-        color: isFav ? color : Colors.grey,
       ),
     );
   }
